@@ -1,0 +1,23 @@
+services:
+#  elasticsearch:
+#    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.10'
+#    environment:
+#      - 'ELASTIC_PASSWORD=secret'
+#      - 'discovery.type=single-node'
+#      - 'xpack.security.enabled=false'
+#    ports:
+#      - '9200'
+#      - '9300'
+  postgres:
+    image: 'postgres:latest'
+    restart: always
+    environment:
+      POSTGRES_DB: xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
+      POSTGRES_PASSWORD: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
+      POSTGRES_USER: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
+    ports:
+      - 5432:5432
+#  redis:
+#    image: 'redis:latest'
+#    ports:
+#      - '6379'
