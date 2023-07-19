@@ -3,10 +3,7 @@ package com.obss.metro.entity.v1;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -60,14 +57,14 @@ public class Job {
     private Timestamp updatedAt;
 
     @NotNull
-    @Future
+    @Future(message = "Due date must be in future")
     private Timestamp dueDate;
 
     @OneToMany
     private Set<JobApplication> applications;
 
     @PrePersist
-    private void setId() {
+    private void setIdPrePersist() {
         if (this.id == null) {
             this.id = ThreadLocalRandom.current().nextLong();
         }

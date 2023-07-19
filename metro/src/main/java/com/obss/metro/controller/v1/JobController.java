@@ -1,18 +1,23 @@
 package com.obss.metro.controller.v1;
 
-import com.obss.metro.dto.JobDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.obss.metro.dto.v1.job.JobRequestDTO;
+import com.obss.metro.dto.v1.job.JobResponseDTO;
 import com.obss.metro.entity.v1.JobApplication;
 import com.obss.metro.service.v1.JobService;
+import jakarta.persistence.RollbackException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * /api/v1/jobs .GET? .POST?
@@ -23,11 +28,12 @@ import java.util.Set;
  */
 
 @RestController
-@RequestMapping("/api/v1/jobs")
+@RequestMapping(value = "/api/v1/jobs")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class JobController {
     private final JobService jobService;
+    private final ObjectMapper objectMapper;
 
     /**
      * @param page Optional query parameter for
@@ -38,8 +44,8 @@ public class JobController {
      * @throws Exception if occurred
      */
     @GetMapping
-    public Set<JobDto> getJobs(@RequestParam Optional<Integer> page,
-                               @RequestParam Optional<Integer> jobs) throws Exception {
+    public Set<JobResponseDTO> getJobs(@RequestParam Optional<Integer> page,
+                                       @RequestParam Optional<Integer> jobs) throws Exception {
 
         // 0 00 -> no args
         // 1 01 -> only jobs
@@ -60,17 +66,17 @@ public class JobController {
         };
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public JobDto postJob(JobDto jobDto) throws Exception {
-        return jobService.saveJob(jobDto);
+    @PostMapping(consumes = "application/json")
+    public JobResponseDTO postJob(@RequestBody JobRequestDTO jobResponseDto) {
+        return jobService.saveJob(jobResponseDto);
     }
 
     @GetMapping("/{id}")
-    public JobDto findJobById(@PathVariable Long id) throws Exception {
+    public JobResponseDTO findJobById(@PathVariable Long id) throws Exception {
         return jobService
                 .findJobById(id)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found")
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found")
                 );
     }
 

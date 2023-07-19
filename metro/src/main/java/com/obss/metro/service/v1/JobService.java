@@ -1,6 +1,7 @@
 package com.obss.metro.service.v1;
 
-import com.obss.metro.dto.JobDto;
+import com.obss.metro.dto.v1.job.JobRequestDTO;
+import com.obss.metro.dto.v1.job.JobResponseDTO;
 import com.obss.metro.entity.v1.InUser;
 import com.obss.metro.entity.v1.Job;
 import com.obss.metro.entity.v1.JobApplication;
@@ -34,44 +35,46 @@ public class JobService {
     private final JobApplicationRepository applicationRepository;
 
     /**
+     *
      * @return Set of all jobs
      * @throws Exception if occurred
      */
-    public Set<JobDto> findAllJobs() throws Exception {
+    public Set<JobResponseDTO> findAllJobs() throws Exception {
         return jobRepository
                 .findAllBy().stream()
-                .map(JobDto::fromJob)
+                .map(JobResponseDTO::fromJob)
                 .collect(Collectors.toSet());
     }
 
     /**
+     *
      * @param page Page number
      * @param jobs Number of job posts in a page
      * @return Set of jobs with given parameters
      * @throws Exception if occurred
      */
-    public Set<JobDto> findJobsPaged(int page, int jobs) throws Exception {
+    public Set<JobResponseDTO> findJobsPaged(int page, int jobs) throws Exception {
         final Pageable pageRequest = PageRequest.of(page, jobs);
         return jobRepository
                 .findAll(pageRequest).stream()
-                .map(JobDto::fromJob)
+                .map(JobResponseDTO::fromJob)
                 .collect(Collectors.toSet());
     }
 
-    public JobDto saveJob(JobDto jobDto) throws Exception {
-        final Job job = jobRepository.save(jobDto.toJob());
-        return JobDto.fromJob(job);
+    public JobResponseDTO saveJob(JobRequestDTO jobRequestDto) {
+        Job job = jobRequestDto.toJob();
+        return JobResponseDTO.fromJob(jobRepository.save(job));
     }
 
-    public Optional<JobDto> findJobById(final Long id) throws Exception {
+    public Optional<JobResponseDTO> findJobById(final Long id) throws Exception {
         return jobRepository
-                .findById(id).map(JobDto::fromJob);
+                .findById(id)
+                .map(JobResponseDTO::fromJob);
     }
 
     public Set<JobApplication> listJobApplicationsByJobId(final Long id) throws Exception {
         return applicationRepository.findAllByAppliedJobId(id);
     }
-
 
     /**
      *
@@ -88,7 +91,7 @@ public class JobService {
 
     @PostConstruct
     public void test_createJob() throws Exception {
-        final Job job = Job.builder().id(124123123124L).title("Java Developer").workplaceType(Job.WorkplaceType.ON_SITE).location("Rome, Italy").type(Job.Type.FULL_TIME).details("Hello, we're looking for a fucking Java master with one year experience").status(Job.Status.ACTIVE).dueDate(Timestamp.valueOf(LocalDateTime.now().plusDays(30))).build();
+        final Job job = Job.builder().id(1238912078414L).title("Java Developer").workplaceType(Job.WorkplaceType.ON_SITE).location("Rome, Italy").type(Job.Type.FULL_TIME).details("Hello, we're looking for a fucking Java master with one year experience").status(Job.Status.ACTIVE).dueDate(Timestamp.valueOf(LocalDateTime.now().plusDays(30))).build();
 
         final InUser user = InUser.builder().id("yrZCpj2Z12").build();
 
@@ -97,5 +100,9 @@ public class JobService {
         jobRepository.save(job);
         userRepository.save(user);
         applicationRepository.save(application);
+
+        final JobRequestDTO requestDto = new JobRequestDTO("title", Job.WorkplaceType.HYBRID, "Afyonkarahisar, Türkiye", Job.Type.FULL_TIME, Job.Status.ACTIVE, Timestamp.valueOf(LocalDateTime.now().plusDays(1)));
+        final JobResponseDTO responseDto = saveJob(requestDto);
+        log.info(responseDto.toString());
     }
 }

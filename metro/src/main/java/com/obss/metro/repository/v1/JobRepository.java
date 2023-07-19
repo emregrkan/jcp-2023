@@ -15,7 +15,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     /**
      *
      * @return Set of uncategorized jobs
-     * @see com.obss.metro.entity.v1.Job
+     * @see Job
      */
     Set<Job> findAllBy();
 
@@ -25,15 +25,16 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @see Job
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update Job as j set j.status=Job.Status.REMOVED where j.status=Job.Status.ACTIVE and j.id=:id")
+    @Query("update Job as j set j.status=\"REMOVED\" where j.status=\"ACTIVE\" and j.id=:id")
     void removeJobById(@Param("id") final Long id);
 
     /**
      *
-     * Updates the expired Jobs
+     * Updates {@link Job.Status#ACTIVE}, expired Jobs by updating their status as {@link Job.Status#CLOSED}
      * @see JobService#updateExpired()
+     * @see Job
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update Job as j set j.status=Job.Status.CLOSED where j.dueDate < current_timestamp and j.status=Job.Status.ACTIVE ")
+    @Query("update Job as j set j.status=\"CLOSED\" where j.dueDate < current_timestamp and j.status=\"ACTIVE\"")
     void findAndUpdateActiveExpired(); // todo: return updated ids to log
 }
