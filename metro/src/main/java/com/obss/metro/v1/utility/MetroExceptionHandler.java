@@ -4,9 +4,10 @@ import com.obss.metro.v1.exception.ValidationException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 // todo: not sure if this is the right way
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 // todo: handle json parse
 
 @RestControllerAdvice
-@Slf4j
 public class MetroExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<ValidationException> handleConstraintViolations(
       final ConstraintViolationException exception) {
     final Set<ValidationException.Violation> errors =

@@ -1,17 +1,21 @@
+# todo: use env
 spring:
-  ldap:
-    embedded:
-      ldif: classpath:test-server.ldif
-      base-dn: dc=obss,dc=com
-      port: 8389
   datasource:
-#    todo: use env
     url: jdbc:postgresql://localhost:5432/xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
     username: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
     password: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
+
   jpa:
     hibernate:
       ddl-auto: create-drop
+
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/metro
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
