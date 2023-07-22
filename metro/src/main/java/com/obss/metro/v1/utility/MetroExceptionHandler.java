@@ -49,6 +49,19 @@ public class MetroExceptionHandler {
         errors);
   }
 
+  /**
+   * <strong>This method is never reached</strong> but used for OpenAPI docs.
+   *
+   * @return null always
+   * @see MetroExceptionHandler.RestAuthenticationEntryPoint
+   * @author <a href="mailto:emre-gurkan@hotmail.com">Emre Gürkan</a>
+   */
+  @ExceptionHandler(AuthenticationException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ExceptionWrapper handleAuthenticationExceptionForOpenAPI() {
+    return null;
+  }
+
   // todo: ask about this
   @Component
   @RequiredArgsConstructor(onConstructor = @__(@Autowired))
