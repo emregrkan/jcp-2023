@@ -1,9 +1,11 @@
 package com.obss.metro.v1.controller;
 
+import com.obss.metro.v1.configuration.SecurityConfiguration;
 import com.obss.metro.v1.dto.job.JobRequestDTO;
 import com.obss.metro.v1.dto.job.JobResponseDTO;
 import com.obss.metro.v1.entity.JobApplication;
 import com.obss.metro.v1.service.JobService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping(value = "/api/v1/jobs")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@SecurityRequirement(name = SecurityConfiguration.SECURITY_CONFIG_NAME)
 @Slf4j
 public class JobController {
   private final JobService jobService;
@@ -63,6 +66,7 @@ public class JobController {
    * @author <a href="mailto:emre-gurkan@hotmail.com">Emre Gürkan</a>
    */
   @PostMapping(consumes = "application/json")
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<JobResponseDTO> postJob(@RequestBody JobRequestDTO jobRequestDTO) {
     final JobResponseDTO responseDTO = jobService.saveJob(jobRequestDTO);
     final URI location =
