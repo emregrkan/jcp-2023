@@ -24,6 +24,20 @@ services:
     healthcheck:
       test: [ 'CMD', 'pg_isready' ]
 
+  postgres_debug:
+    image: 'postgres:latest'
+    restart: always
+    environment:
+      POSTGRES_DB: debug
+      POSTGRES_PASSWORD: debug
+      POSTGRES_USER: debug
+    networks:
+      - metro
+    ports:
+      - 5433:5432
+    healthcheck:
+      test: [ 'CMD', 'pg_isready' ]
+
   openldap:
     image: 'bitnami/openldap:latest'
     restart: always

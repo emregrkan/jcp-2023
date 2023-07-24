@@ -3,7 +3,8 @@ package com.obss.metro.v1.controller;
 import com.obss.metro.v1.configuration.SecurityConfiguration;
 import com.obss.metro.v1.dto.job.JobRequestDTO;
 import com.obss.metro.v1.dto.job.JobResponseDTO;
-import com.obss.metro.v1.entity.JobApplication;
+import com.obss.metro.v1.dto.jobapplication.JobApplicationListResponseDTO;
+import com.obss.metro.v1.exception.impl.ServerException;
 import com.obss.metro.v1.service.JobService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.net.URI;
@@ -13,10 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -39,7 +38,7 @@ public class JobController {
    */
   @GetMapping
   public Page<JobResponseDTO> getJobs(
-      @RequestParam Optional<Integer> page, @RequestParam Optional<Integer> jobs) throws Exception {
+      @RequestParam Optional<Integer> page, @RequestParam Optional<Integer> jobs) {
     // 0 00 -> no args
     // 1 01 -> only jobs
     // 2 10 -> only page
@@ -54,8 +53,7 @@ public class JobController {
       case 1 -> jobService.findPagedJobs(0, jobs.get());
       case 2 -> jobService.findPagedJobs(page.get(), 8);
       case 3 -> jobService.findPagedJobs(page.get(), jobs.get());
-      default -> throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+      default -> throw new ServerException();
     };
   }
 
@@ -66,8 +64,9 @@ public class JobController {
    * @author <a href="mailto:emre-gurkan@hotmail.com">Emre Gürkan</a>
    */
   @PostMapping(consumes = "application/json")
-  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<JobResponseDTO> postJob(@RequestBody JobRequestDTO jobRequestDTO) {
+    // todo: return response entity from service?
+
     final JobResponseDTO responseDTO = jobService.saveJob(jobRequestDTO);
     final URI location =
         ServletUriComponentsBuilder.fromCurrentRequestUri()
@@ -79,9 +78,7 @@ public class JobController {
 
   @GetMapping("/{id}")
   public JobResponseDTO getJobById(@PathVariable Long id) {
-    return jobService
-        .findJobById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+    return jobService.findJobById(id);
   }
 
   @PutMapping("/{id}")
@@ -95,7 +92,7 @@ public class JobController {
   }
 
   @GetMapping("/{id}/applications")
-  public Set<JobApplication> listJobApplicationsByJobId(@PathVariable Long id) {
-    return jobService.listJobApplicationsByJobId(id);
+  public Set<JobApplicationListResponseDTO> listJobApplicationsByJobId(@PathVariable Long id) {
+    return jobService.findAllApplicationsById(id);
   }
 }

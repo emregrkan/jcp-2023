@@ -6,20 +6,18 @@ import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
 // todo: validation
 @Entity
-@Where(clause = "status!='REMOVED'")
+@Where(clause = "status != 'REMOVED'")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder // dev only
 public class Job {
   @Id private Long id;
@@ -39,7 +37,7 @@ public class Job {
 
   /*
    todo: probably content shouldn't be stored on postgres
-    but instead on elasticsearch to implement free format text search...
+    but instead elasticsearch to implement free format text search...
     I think fetched data will be merged on front end? maybe even Job
     should be on elasticsearch as well? I'm not sure...
   */
@@ -59,13 +57,13 @@ public class Job {
   @Future(message = "Due date must be in future")
   private Timestamp dueDate;
 
-  @OneToMany private Set<JobApplication> applications;
+  @OneToMany(mappedBy = "jobApplied", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<JobApplication> applications;
 
+  // todo: replace this with snowflake
   @PrePersist
   private void setIdPrePersist() {
-    if (this.id == null) {
-      this.id = ThreadLocalRandom.current().nextLong();
-    }
+    if (this.id == null) this.id = ThreadLocalRandom.current().nextLong();
   }
 
   public enum WorkplaceType {

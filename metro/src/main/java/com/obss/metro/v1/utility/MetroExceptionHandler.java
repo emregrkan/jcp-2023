@@ -1,8 +1,12 @@
 package com.obss.metro.v1.utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.obss.metro.v1.exception.ExceptionBase;
-import com.obss.metro.v1.exception.ExceptionWrapper;
+import com.obss.metro.v1.dto.MetroExceptionDTO;
+import com.obss.metro.v1.exception.MetroError;
+import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
+import com.obss.metro.v1.exception.impl.ServerException;
+import com.obss.metro.v1.exception.impl.UnauthorizedException;
+import com.obss.metro.v1.exception.impl.UnprocessableEntityException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +24,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-// todo: not sure if this is the right way
 // todo: document this
 // todo: handle json parse
 // todo: remove 422 from unnecessary methods
@@ -30,23 +33,33 @@ import org.springframework.web.bind.annotation.*;
 public class MetroExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-  public ExceptionWrapper handleConstraintViolationExceptions(
+  public MetroExceptionDTO handleConstraintViolationExceptions(
       final ConstraintViolationException exception) {
-    final Set<ExceptionBase> errors =
+    final Set<MetroError> errors =
         exception.getConstraintViolations().parallelStream()
             .map(
                 violation ->
-                    new ExceptionBase(
-                        violation.getPropertyPath().toString(), violation.getMessage()))
+                    new MetroError(violation.getPropertyPath().toString(), violation.getMessage()))
             .collect(Collectors.toSet());
 
-    log.info(exception.getMessage());
+    final UnprocessableEntityException ex = new UnprocessableEntityException(errors);
+    log.error("", ex);
 
-    return new ExceptionWrapper(
-        HttpStatus.UNPROCESSABLE_ENTITY.value(),
-        "Unprocessable Entity",
-        HttpStatus.UNPROCESSABLE_ENTITY.getReasonPhrase(),
-        errors);
+    return new MetroExceptionDTO(ex);
+  }
+
+  @ExceptionHandler(ResourceNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public MetroExceptionDTO handleResourceNotFoundException(final ResourceNotFoundException ex) {
+    log.error("Exception: ", ex);
+    return new MetroExceptionDTO(ex);
+  }
+
+  @ExceptionHandler(ServerException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public MetroExceptionDTO handleInternalServerError(final ServerException ex) {
+    log.error("Exception: ", ex);
+    return new MetroExceptionDTO(ex);
   }
 
   /**
@@ -58,11 +71,10 @@ public class MetroExceptionHandler {
    */
   @ExceptionHandler(AuthenticationException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  public ExceptionWrapper handleAuthenticationExceptionForOpenAPI() {
+  public MetroExceptionDTO handleAuthenticationExceptionForOpenAPI() {
     return null;
   }
 
-  // todo: ask about this
   @Component
   @RequiredArgsConstructor(onConstructor = @__(@Autowired))
   public static class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -70,23 +82,16 @@ public class MetroExceptionHandler {
 
     @Override
     public void commence(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        AuthenticationException authException)
+        final HttpServletRequest request,
+        final HttpServletResponse response,
+        final AuthenticationException authException)
         throws IOException, ServletException {
       response.setStatus(HttpStatus.UNAUTHORIZED.value());
       response.setContentType("application/json");
-      final ExceptionBase error =
-          new ExceptionBase("Authorization", "Invalid or missing authorization header");
-      final ExceptionWrapper errorResponse =
-          new ExceptionWrapper(
-              HttpStatus.UNAUTHORIZED.value(),
-              "Unauthorized",
-              "You are not authorized to access this resource",
-              Set.of(error));
       final ServletOutputStream outputStream = response.getOutputStream();
-
-      objectMapper.writeValue(outputStream, errorResponse);
+      final UnauthorizedException ex = new UnauthorizedException();
+      log.error("", ex);
+      objectMapper.writeValue(outputStream, new MetroExceptionDTO(ex));
       outputStream.flush();
     }
   }

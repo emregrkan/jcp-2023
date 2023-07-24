@@ -2,21 +2,32 @@ package com.obss.metro.v1.entity;
 
 // todo: is this necessary?
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.HashSet;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class InUser {
-  @Id private String id;
-  @OneToMany private Set<JobApplication> applications;
+  @Id private Long id;
+
+  @NotNull
+  @Column(unique = true)
+  String inId;
+
+  @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<JobApplication> applications;
+
+  public void addJobApplication(final JobApplication jobApplication) {
+    if (applications == null) applications = new HashSet<>();
+    applications.add(jobApplication);
+  }
 }

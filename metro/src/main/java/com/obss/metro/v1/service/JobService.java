@@ -2,24 +2,26 @@ package com.obss.metro.v1.service;
 
 import com.obss.metro.v1.dto.job.JobRequestDTO;
 import com.obss.metro.v1.dto.job.JobResponseDTO;
+import com.obss.metro.v1.dto.jobapplication.JobApplicationListResponseDTO;
 import com.obss.metro.v1.entity.InUser;
 import com.obss.metro.v1.entity.Job;
 import com.obss.metro.v1.entity.JobApplication;
+import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
 import com.obss.metro.v1.repository.InUserRepository;
-import com.obss.metro.v1.repository.JobApplicationRepository;
 import com.obss.metro.v1.repository.JobRepository;
 import jakarta.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,7 +34,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class JobService {
   private final JobRepository jobRepository;
   private final InUserRepository userRepository;
-  private final JobApplicationRepository applicationRepository;
 
   /**
    * @param page Page number
@@ -50,8 +51,13 @@ public class JobService {
     return JobResponseDTO.fromJob(jobRepository.save(job));
   }
 
-  public Optional<JobResponseDTO> findJobById(final Long id) {
-    return jobRepository.findById(id).map(JobResponseDTO::fromJob);
+  public JobResponseDTO findJobById(final Long id) {
+    Optional<Job> byId = jobRepository
+            .findById(id);
+    return JobResponseDTO.fromJob(
+        byId
+            .orElseThrow(
+                () -> new ResourceNotFoundException("id", "Resource with requested id not found")));
   }
 
   public JobResponseDTO updateJobById(final JobRequestDTO requestDTO, final Long id)
@@ -64,15 +70,22 @@ public class JobService {
       return JobResponseDTO.fromJob(jobRepository.save(job));
     }
 
-    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found");
+    throw new ResourceNotFoundException("id", "Resource with requested id not found");
   }
 
   public void removeJobById(final Long id) {
     jobRepository.removeJobById(id);
   }
 
-  public Set<JobApplication> listJobApplicationsByJobId(final Long id) {
-    return applicationRepository.findAllByAppliedJobId(id);
+  public Set<JobApplicationListResponseDTO> findAllApplicationsById(final Long id) {
+    return jobRepository
+        .findById(id)
+        .orElseThrow(
+            () -> new ResourceNotFoundException("id", "Resource with requested id not found"))
+        .getApplications()
+        .stream()
+        .map(JobApplicationListResponseDTO::fromJobApplication)
+        .collect(Collectors.toSet());
   }
 
   /**
@@ -91,7 +104,7 @@ public class JobService {
   public void test_createJob() throws Exception {
     final Job job =
         Job.builder()
-            .id(1238912078414L)
+            .id(6942031911L)
             .title("Java Developer")
             .workplaceType(Job.WorkplaceType.ON_SITE)
             .location("Rome, Italy")
@@ -101,19 +114,16 @@ public class JobService {
             .dueDate(Timestamp.valueOf(LocalDateTime.now().plusDays(30)))
             .build();
 
-    final InUser user = InUser.builder().id("yrZCpj2Z12").build();
+    final InUser user =
+        InUser.builder().id(ThreadLocalRandom.current().nextLong()).inId("yrZCpj2Z12").build();
 
-    final JobApplication application =
-        JobApplication.builder()
-            .id(124135453453L)
-            .applicant(user)
-            .appliedJob(job)
-            .status(JobApplication.Status.SUBMITTED)
-            .build();
-
-    jobRepository.save(job);
+    user.addJobApplication(
+        new JobApplication(
+            ThreadLocalRandom.current().nextLong(),
+            user,
+            jobRepository.save(job),
+            JobApplication.Status.SUBMITTED));
     userRepository.save(user);
-    applicationRepository.save(application);
 
     final JobRequestDTO requestDto =
         new JobRequestDTO(
