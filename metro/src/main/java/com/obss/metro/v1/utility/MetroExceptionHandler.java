@@ -1,7 +1,7 @@
 package com.obss.metro.v1.utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.obss.metro.v1.dto.MetroExceptionDTO;
+import com.obss.metro.v1.dto.metroexception.MetroExceptionResponseDTO;
 import com.obss.metro.v1.exception.MetroError;
 import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
 import com.obss.metro.v1.exception.impl.ServerException;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class MetroExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-  public MetroExceptionDTO handleConstraintViolationExceptions(
+  public MetroExceptionResponseDTO handleConstraintViolationExceptions(
       final ConstraintViolationException exception) {
     final Set<MetroError> errors =
         exception.getConstraintViolations().parallelStream()
@@ -45,21 +45,21 @@ public class MetroExceptionHandler {
     final UnprocessableEntityException ex = new UnprocessableEntityException(errors);
     log.error("", ex);
 
-    return new MetroExceptionDTO(ex);
+    return new MetroExceptionResponseDTO(ex);
   }
 
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public MetroExceptionDTO handleResourceNotFoundException(final ResourceNotFoundException ex) {
+  public MetroExceptionResponseDTO handleResourceNotFoundException(final ResourceNotFoundException ex) {
     log.error("Exception: ", ex);
-    return new MetroExceptionDTO(ex);
+    return new MetroExceptionResponseDTO(ex);
   }
 
   @ExceptionHandler(ServerException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public MetroExceptionDTO handleInternalServerError(final ServerException ex) {
+  public MetroExceptionResponseDTO handleInternalServerError(final ServerException ex) {
     log.error("Exception: ", ex);
-    return new MetroExceptionDTO(ex);
+    return new MetroExceptionResponseDTO(ex);
   }
 
   /**
@@ -71,7 +71,7 @@ public class MetroExceptionHandler {
    */
   @ExceptionHandler(AuthenticationException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  public MetroExceptionDTO handleAuthenticationExceptionForOpenAPI() {
+  public MetroExceptionResponseDTO handleAuthenticationExceptionForOpenAPI() {
     return null;
   }
 
@@ -91,7 +91,7 @@ public class MetroExceptionHandler {
       final ServletOutputStream outputStream = response.getOutputStream();
       final UnauthorizedException ex = new UnauthorizedException();
       log.error("", ex);
-      objectMapper.writeValue(outputStream, new MetroExceptionDTO(ex));
+      objectMapper.writeValue(outputStream, new MetroExceptionResponseDTO(ex));
       outputStream.flush();
     }
   }
