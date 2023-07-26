@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
 // todo: validation
+// todo: hr user??
 @Entity
 @Where(clause = "status != 'REMOVED'")
 @NoArgsConstructor
@@ -21,6 +23,8 @@ import org.hibernate.annotations.Where;
 @Builder // dev only
 public class Job {
   @Id private Long id;
+
+  @NotNull private UUID posterId;
 
   @NotNull private String title;
 

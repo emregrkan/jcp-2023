@@ -7,14 +7,18 @@ import com.obss.metro.v1.dto.jobapplication.JobApplicationListResponseDTO;
 import com.obss.metro.v1.exception.impl.ServerException;
 import com.obss.metro.v1.service.JobService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
+import java.security.Principal;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -64,10 +68,13 @@ public class JobController {
    * @author <a href="mailto:emre-gurkan@hotmail.com">Emre Gürkan</a>
    */
   @PostMapping(consumes = "application/json")
-  public ResponseEntity<JobResponseDTO> postJob(@RequestBody JobRequestDTO jobRequestDTO) {
+  @PreAuthorize("hasRole('OPERATOR')")
+  public ResponseEntity<JobResponseDTO> postJob(
+      @RequestBody JobRequestDTO jobRequestDTO, @NotNull final Principal principal) {
     // todo: return response entity from service?
 
-    final JobResponseDTO responseDTO = jobService.saveJob(jobRequestDTO);
+    final JobResponseDTO responseDTO =
+        jobService.saveJob(jobRequestDTO, UUID.fromString(principal.getName()));
     final URI location =
         ServletUriComponentsBuilder.fromCurrentRequestUri()
             .path("/%d".formatted(responseDTO.id()))
@@ -82,13 +89,18 @@ public class JobController {
   }
 
   @PutMapping("/{id}")
-  public JobResponseDTO putJobById(@RequestBody JobRequestDTO requestDTO, @PathVariable Long id) {
-    return jobService.updateJobById(requestDTO, id);
+  @PreAuthorize("hasRole('OPERATOR')")
+  public JobResponseDTO putJobById(
+      @RequestBody JobRequestDTO requestDTO,
+      @PathVariable Long id,
+      @NotNull final Principal principal) {
+    return jobService.updateJobById(requestDTO, id, UUID.fromString(principal.getName()));
   }
 
   @DeleteMapping("/{id}")
-  public void deleteJobById(@PathVariable Long id) {
-    jobService.removeJobById(id);
+  @PreAuthorize("hasRole('OPERATOR')")
+  public void deleteJobById(@PathVariable Long id, @NotNull final Principal principal) {
+    jobService.removeJobById(id, UUID.fromString(principal.getName()));
   }
 
   @GetMapping("/{id}/applications")

@@ -3,10 +3,7 @@ package com.obss.metro.v1.utility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obss.metro.v1.dto.metroexception.MetroExceptionResponseDTO;
 import com.obss.metro.v1.exception.MetroError;
-import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
-import com.obss.metro.v1.exception.impl.ServerException;
-import com.obss.metro.v1.exception.impl.UnauthorizedException;
-import com.obss.metro.v1.exception.impl.UnprocessableEntityException;
+import com.obss.metro.v1.exception.impl.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +49,8 @@ public class MetroExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public MetroExceptionResponseDTO handleResourceNotFoundException(final ResourceNotFoundException ex) {
+  public MetroExceptionResponseDTO handleResourceNotFoundException(
+      final ResourceNotFoundException ex) {
     log.error("Exception: ", ex);
     return new MetroExceptionResponseDTO(ex);
   }
@@ -75,10 +75,26 @@ public class MetroExceptionHandler {
     return null;
   }
 
+  /**
+   * This method is for Forbidden actions which are occurred at the MVC layer, specifically for CRUD
+   * operations on {@link com.obss.metro.v1.entity.Job} <br>
+   * <br>
+   * Example: One poster tries to delete others job posting <br>
+   *
+   * @return {@link MetroExceptionResponseDTO} formed by {@link ForbiddenException}
+   * @see MetroExceptionHandler.RestForbiddenHandler
+   * @author <a href="mailto:emre-gurkan@hotmail.com">Emre Gürkan</a>
+   */
+  @ExceptionHandler(ForbiddenException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public MetroExceptionResponseDTO handleForbiddenExceptionForOpenAPI(final ForbiddenException ex) {
+    return new MetroExceptionResponseDTO(ex);
+  }
+
   @Component
   @RequiredArgsConstructor(onConstructor = @__(@Autowired))
   public static class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
-    public final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void commence(
@@ -90,6 +106,27 @@ public class MetroExceptionHandler {
       response.setContentType("application/json");
       final ServletOutputStream outputStream = response.getOutputStream();
       final UnauthorizedException ex = new UnauthorizedException();
+      log.error("", ex);
+      objectMapper.writeValue(outputStream, new MetroExceptionResponseDTO(ex));
+      outputStream.flush();
+    }
+  }
+
+  @Component
+  @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+  public static class RestForbiddenHandler implements AccessDeniedHandler {
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public void handle(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        AccessDeniedException accessDeniedException)
+        throws IOException, ServletException {
+      response.setStatus(HttpStatus.FORBIDDEN.value());
+      response.setContentType("application/json");
+      final ServletOutputStream outputStream = response.getOutputStream();
+      final ForbiddenException ex = new ForbiddenException();
       log.error("", ex);
       objectMapper.writeValue(outputStream, new MetroExceptionResponseDTO(ex));
       outputStream.flush();

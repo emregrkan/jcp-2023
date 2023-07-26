@@ -6,6 +6,7 @@ import com.obss.metro.v1.dto.jobapplication.JobApplicationListResponseDTO;
 import com.obss.metro.v1.entity.InUser;
 import com.obss.metro.v1.entity.Job;
 import com.obss.metro.v1.entity.JobApplication;
+import com.obss.metro.v1.exception.impl.ForbiddenException;
 import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
 import com.obss.metro.v1.repository.InUserRepository;
 import com.obss.metro.v1.repository.JobRepository;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -46,35 +48,50 @@ public class JobService {
     return jobRepository.findAll(pageRequest).map(JobResponseDTO::fromJob);
   }
 
-  public JobResponseDTO saveJob(JobRequestDTO jobRequestDto) {
+  public JobResponseDTO saveJob(final JobRequestDTO jobRequestDto, final UUID posterId) {
     Job job = jobRequestDto.toJob();
+    job.setPosterId(posterId);
     return JobResponseDTO.fromJob(jobRepository.save(job));
   }
 
   public JobResponseDTO findJobById(final Long id) {
-    Optional<Job> byId = jobRepository
-            .findById(id);
+    Optional<Job> byId = jobRepository.findById(id);
     return JobResponseDTO.fromJob(
-        byId
-            .orElseThrow(
-                () -> new ResourceNotFoundException("id", "Resource with requested id not found")));
+        byId.orElseThrow(
+            () -> new ResourceNotFoundException("id", "Resource with requested id not found")));
   }
 
-  public JobResponseDTO updateJobById(final JobRequestDTO requestDTO, final Long id)
+  public JobResponseDTO updateJobById(
+      final JobRequestDTO requestDTO, final Long id, final UUID posterId)
       throws ResponseStatusException {
     final Job job = requestDTO.toJob();
-    boolean exists = jobRepository.existsById(id);
+    final Optional<UUID> target = jobRepository.findPosterIdById(id);
 
-    if (exists) {
+    if (target.isPresent()) {
+      if (!target.get().equals(posterId)) {
+        throw new ForbiddenException();
+      }
+
       job.setId(id);
+      job.setPosterId(posterId);
       return JobResponseDTO.fromJob(jobRepository.save(job));
     }
 
     throw new ResourceNotFoundException("id", "Resource with requested id not found");
   }
 
-  public void removeJobById(final Long id) {
-    jobRepository.removeJobById(id);
+  public void removeJobById(final Long id, final UUID posterId) {
+    final Optional<UUID> target = jobRepository.findPosterIdById(id);
+
+    if (target.isPresent()) {
+      if (!target.get().equals(posterId)) {
+        throw new ForbiddenException();
+      }
+
+      jobRepository.removeJobById(id);
+    }
+
+    throw new ResourceNotFoundException("id", "Resource with requested id not found");
   }
 
   public Set<JobApplicationListResponseDTO> findAllApplicationsById(final Long id) {
@@ -101,10 +118,11 @@ public class JobService {
   }
 
   @PostConstruct
-  public void test_createJob() throws Exception {
+  public void test_createJob() {
     final Job job =
         Job.builder()
             .id(6942031911L)
+            .posterId(UUID.fromString("5a51f11f-b0e6-4499-9905-e841ced9e85c"))
             .title("Java Developer")
             .workplaceType(Job.WorkplaceType.ON_SITE)
             .location("Rome, Italy")
@@ -124,17 +142,5 @@ public class JobService {
             jobRepository.save(job),
             JobApplication.Status.SUBMITTED));
     userRepository.save(user);
-
-    final JobRequestDTO requestDto =
-        new JobRequestDTO(
-            "title",
-            Job.WorkplaceType.HYBRID,
-            "Afyonkarahisar, Türkiye",
-            Job.Type.FULL_TIME,
-            Job.Status.ACTIVE,
-            Timestamp.valueOf(LocalDateTime.now().plusDays(1)));
-
-    final JobResponseDTO responseDto = saveJob(requestDto);
-    log.info(responseDto.toString());
   }
 }
