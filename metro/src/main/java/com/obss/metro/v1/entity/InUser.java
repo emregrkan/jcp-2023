@@ -4,10 +4,8 @@ package com.obss.metro.v1.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.HashSet;
 import java.util.Set;
-
 import lombok.*;
 
 @Entity

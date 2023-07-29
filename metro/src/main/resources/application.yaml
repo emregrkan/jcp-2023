@@ -1,9 +1,9 @@
 # todo: use env
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/debug
-    username: debug
-    password: debug
+    url: jdbc:postgresql://localhost:5432/xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
+    username: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
+    password: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
 
   jpa:
     hibernate:

@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @EnableMethodSecurity(prePostEnabled = true)
 @EnableScheduling
 public class MetroApplication {
-
   public static void main(String[] args) {
     SpringApplication.run(MetroApplication.class, args);
   }

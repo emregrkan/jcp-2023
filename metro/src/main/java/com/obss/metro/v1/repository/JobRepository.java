@@ -3,16 +3,13 @@ package com.obss.metro.v1.repository;
 import com.obss.metro.v1.entity.Job;
 import com.obss.metro.v1.service.JobService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -42,7 +39,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
   void findAndUpdateActiveExpired(); // todo: return updated ids to log
 
   /**
-   *
    * @param id The job id
    * @return Optional of PosterId
    * @see Job#posterId
