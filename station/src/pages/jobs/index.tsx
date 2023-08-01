@@ -1,66 +1,73 @@
-import { getPagedJobs } from "@/api/jobs";
-import moment from "moment";
-import { getServerAuthSession } from "@/config/auth";
-import type { Exception } from "@/types/exception";
-import type { PagedJobs } from "@/types/jobs";
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from "next";
+import { PagedJobs } from "@/types/jobs";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 
-export default function Jobs({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return (
-    <main>
-      <div>
-        <span>filter section</span>
-      </div>
-      <div>
-        <span>Jobs</span>
-        {data?.content.map((job) => (
-          <section key={job.id}>
-            <h6>{job.title}</h6>
-            <p>
-              {(() => {
-                // this is so stupid
-                switch (job.workplaceType) {
-                  case "ON_SITE":
-                    return "On Site";
-                  case "HYBRID":
-                    return "Hybrid";
-                  case "REMOTE":
-                    return "Remote";
-                }
-              })()}
-            </p>
-          </section>
-        ))}
-      </div>
-    </main>
+export default function Jobs() {
+  const router = useRouter();
+  const [refreshed, setRefreshed] = useState(false);
+  const { data: session, update } = useSession();
+
+  useEffect(() => {
+    if (!refreshed) {
+      (async () => {
+        await update({ refresh: true });
+        setRefreshed(true);
+      })();
+    }
+  }, [refreshed, update]);
+
+  const fetcher = (url: string, token?: string) =>
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.data);
+
+  const { data, error } = useSWR(
+    `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/jobs`,
+    (url) => fetcher(url, session?.user.accessToken),
   );
-}
 
-export const getServerSideProps: GetServerSideProps<{
-  data: PagedJobs | null;
-}> = async (ctx: GetServerSidePropsContext) => {
-  const response = await getPagedJobs(ctx);
-  if ((response as Exception).status === 401) {
-    return {
-      redirect: {
-        permanent: true,
-        destination: "/signin",
-      },
-      props: {
-        data: null,
-      },
-    };
+  if (error) {
+    console.log(error);
+
+    if (error.response.data.status === 401) {
+      router.push("/signin");
+      return;
+    }
   }
 
-  return {
-    props: {
-      data: response as PagedJobs,
-    },
-  };
-};
+  const jobs = data as PagedJobs;
+
+  return (
+    jobs && (
+      <main>
+        <div>
+          <span>filter section</span>
+        </div>
+        <div>
+          <span>Jobs</span>
+          {jobs.content.map((job) => (
+            <section key={job.id}>
+              <h6>{job.title}</h6>
+              <p>
+                {(() => {
+                  // this is so stupid
+                  switch (job.workplaceType) {
+                    case "ON_SITE":
+                      return "On Site";
+                    case "HYBRID":
+                      return "Hybrid";
+                    case "REMOTE":
+                      return "Remote";
+                  }
+                })()}
+              </p>
+            </section>
+          ))}
+        </div>
+      </main>
+    )
+  );
+}
