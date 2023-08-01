@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   return (
     <nav>
       <div>
@@ -15,24 +15,25 @@ export default function Navbar() {
         <li>
           <Link href="/">Home</Link>
         </li>
-        <li>
-          <Link href="/jobs">Jobs</Link>
-        </li>
-        {status !== "loading" &&
-          (status === "authenticated" ? (
-            <>
+        {status === "authenticated" ? (
+          <>
+            {session.user.profile?.inUrl && (
               <li>
-                <Link href="/profile">Profile</Link>
+                <Link href="/jobs">Jobs</Link>
               </li>
-              <li>
-                <Link href="/signout">Sign Out</Link>
-              </li>
-            </>
-          ) : (
+            )}
             <li>
-              <Link href="/signin">Sign In</Link>
+              <Link href="/profile">Profile</Link>
             </li>
-          ))}
+            <li>
+              <Link href="/logout">Log Out</Link>
+            </li>
+          </>
+        ) : (
+          <li>
+            <Link href="/signin">Sign In</Link>
+          </li>
+        )}
       </ul>
     </nav>
   );

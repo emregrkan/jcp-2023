@@ -10,6 +10,20 @@ services:
   #      - '9200'
   #      - '9300'
 
+  pg-resource:
+    image: 'postgres:latest'
+    restart: always
+    environment:
+      POSTGRES_DB: xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
+      POSTGRES_PASSWORD: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
+      POSTGRES_USER: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
+    networks:
+      - metro
+    ports:
+      - 6543:5432
+    healthcheck:
+      test: [ 'CMD', 'pg_isready' ]
+
   postgres:
     image: 'postgres:latest'
     restart: always
@@ -38,7 +52,7 @@ services:
       - 1389:1389
       - 1636:1636
     volumes:
-      - '/mnt/c/Users/egurkan/obss/metro/src/main/resources:/ldifs'
+      - '/home/egurkan/projects/obss/metro/src/main/resources:/ldifs'
 
   keycloak:
     image: 'quay.io/keycloak/keycloak:22.0.1'

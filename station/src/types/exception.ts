@@ -7,7 +7,7 @@ const Exception = z.object({
     z.object({
       field: z.string(),
       message: z.string(),
-    })
+    }),
   ),
 });
 

@@ -5,7 +5,7 @@ import { Exception } from "@/types/exception";
 import { type PagedJobs } from "@/types/jobs";
 
 const http = axios.create({
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_RESOURCE_BASE,
   validateStatus: () => true,
 });
 
@@ -16,7 +16,7 @@ const http = axios.create({
 export async function getPagedJobs(
   ctx: GetServerSidePropsContext,
   page?: number,
-  size?: number
+  size?: number,
 ): Promise<PagedJobs | Exception> {
   const session = await getServerAuthSession(ctx);
   const response = await http.get("/jobs", {

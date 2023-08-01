@@ -4,8 +4,11 @@ package com.obss.metro.v1.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
 import lombok.*;
 
 @Entity
@@ -15,17 +18,17 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class InUser {
-  @Id private Long id;
+    @Id
+    private UUID id;
 
-  @NotNull
-  @Column(unique = true)
-  String inId;
+    @Column(unique = true)
+    private String inUrl;
 
-  @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private Set<JobApplication> applications;
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<JobApplication> applications;
 
-  public void addJobApplication(final JobApplication jobApplication) {
-    if (applications == null) applications = new HashSet<>();
-    applications.add(jobApplication);
-  }
+    public void addJobApplication(final JobApplication jobApplication) {
+        if (applications == null) applications = new HashSet<>();
+        applications.add(jobApplication);
+    }
 }

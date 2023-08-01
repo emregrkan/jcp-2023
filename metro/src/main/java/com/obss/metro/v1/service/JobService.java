@@ -122,7 +122,8 @@ public class JobService {
     final Job job =
         Job.builder()
             .id(6942031911L)
-            .posterId(UUID.fromString("5a51f11f-b0e6-4499-9905-e841ced9e85c"))
+            // todo: probably a new id is required
+            .posterId(UUID.fromString("c73e7f0f-a36f-49c8-9cce-2c2f9a80e80e"))
             .title("Java Developer")
             .workplaceType(Job.WorkplaceType.ON_SITE)
             .location("Rome, Italy")
@@ -133,7 +134,9 @@ public class JobService {
             .build();
 
     final InUser user =
-        InUser.builder().id(ThreadLocalRandom.current().nextLong()).inId("yrZCpj2Z12").build();
+        InUser.builder()
+            .id(UUID.fromString("8bd0c13d-bf59-4c66-a3cf-699f978f910d"))
+            .build();
 
     user.addJobApplication(
         new JobApplication(
