@@ -1,6 +1,6 @@
 package com.obss.metro.v1.controller;
 
-import com.obss.metro.v1.dto.inuser.InUserPostRequestDTO;
+import com.obss.metro.v1.dto.inuser.InUserRequestDTO;
 import com.obss.metro.v1.dto.inuser.InUserResponseDTO;
 import com.obss.metro.v1.service.InUserService;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +23,7 @@ public class InUserController {
 
   @PostMapping(consumes = "application/json")
   public ResponseEntity<InUserResponseDTO> postUser(
-      @NotNull @RequestBody final InUserPostRequestDTO userDTO,
+      @NotNull @RequestBody final InUserRequestDTO userDTO,
       @NotNull final Principal principal) {
     final InUserResponseDTO user = userService.saveInUser(userDTO, principal.getName());
     final URI location =
@@ -38,5 +38,11 @@ public class InUserController {
   public InUserResponseDTO getUserByInId(@PathVariable UUID id) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     return userService.findInUserById(id, auth);
+  }
+
+  @PutMapping("/{id}")
+  public InUserResponseDTO putUserByInId(@PathVariable @NotNull final UUID id, @RequestBody @NotNull final InUserRequestDTO userDTO) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    return userService.updateInUserById(id, auth, userDTO);
   }
 }

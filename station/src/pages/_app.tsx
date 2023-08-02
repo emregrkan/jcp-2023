@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import UserProvider from "@/provider/UserProvider";
 import "@/styles/globals.css";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
@@ -11,11 +12,13 @@ const App: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Head>
-        <title>Jobs &amp; Carees | OBSS</title>
-      </Head>
-      <Navbar />
-      <Component {...pageProps} />
+      <UserProvider>
+        <Head>
+          <title>Jobs &amp; Carees | OBSS</title>
+        </Head>
+        <Navbar />
+        <Component {...pageProps} />
+      </UserProvider>
     </SessionProvider>
   );
 };

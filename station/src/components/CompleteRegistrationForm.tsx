@@ -1,6 +1,8 @@
+import UserContext from "@/context/UserContext";
 import axios, { AxiosError } from "axios";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -11,8 +13,9 @@ const Inputs = z.object({
 type Inputs = z.infer<typeof Inputs>;
 
 export default function CompleteRegistrationForm() {
+  const { user, setUser } = useContext(UserContext);
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const {
     register,
     handleSubmit,
@@ -22,8 +25,8 @@ export default function CompleteRegistrationForm() {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const inUrl = `https://www.linkedin.com/in/${data.vanityName}`;
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/in-user`,
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/in-user/${user?.id}`,
         {
           inUrl,
         },
@@ -40,7 +43,7 @@ export default function CompleteRegistrationForm() {
         router.push("/signin");
       }
     }
-    await update({ inUrl });
+    user && setUser({ ...user, inUrl });
     router.push("/profile");
   };
 

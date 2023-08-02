@@ -2,22 +2,11 @@ import { PagedJobs } from "@/types/jobs";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 export default function Jobs() {
   const router = useRouter();
-  const [refreshed, setRefreshed] = useState(false);
-  const { data: session, update } = useSession();
-
-  useEffect(() => {
-    if (!refreshed) {
-      (async () => {
-        await update({ refresh: true });
-        setRefreshed(true);
-      })();
-    }
-  }, [refreshed, update]);
+  const { data: session } = useSession();
 
   const fetcher = (url: string, token?: string) =>
     axios
