@@ -1,11 +1,9 @@
 import { PagedJobs } from "@/types/jobs";
 import axios from "axios";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { signIn, useSession } from "next-auth/react";
 import useSWR from "swr";
 
 export default function Jobs() {
-  const router = useRouter();
   const { data: session } = useSession();
 
   const fetcher = (url: string, token?: string) =>
@@ -22,7 +20,7 @@ export default function Jobs() {
     console.log(error);
 
     if (error.response.data.status === 401) {
-      router.push("/signin");
+      signIn("keycloak");
       return;
     }
   }

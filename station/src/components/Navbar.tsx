@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
+
   return (
     <nav>
       <div>
@@ -17,11 +18,9 @@ export default function Navbar() {
         </li>
         {status === "authenticated" ? (
           <>
-            {session.user.profile?.inUrl && (
-              <li>
-                <Link href="/jobs">Jobs</Link>
-              </li>
-            )}
+            <li>
+              <Link href="/jobs">Jobs</Link>
+            </li>
             <li>
               <Link href="/profile">Profile</Link>
             </li>
@@ -31,7 +30,9 @@ export default function Navbar() {
           </>
         ) : (
           <li>
-            <Link href="/signin">Sign In</Link>
+            <a onClick={() => signIn("keycloak")} href="javascript:void(0)">
+              Sign In
+            </a>
           </li>
         )}
       </ul>

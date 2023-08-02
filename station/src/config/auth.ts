@@ -83,7 +83,10 @@ export const authOptions: NextAuthOptions = {
                     authOptions,
                   )
                   .catch((err) =>
-                    console.log("src/config/auth.ts: Error: ", err as AxiosError),
+                    console.log(
+                      "src/config/auth.ts: Error: ",
+                      err as AxiosError,
+                    ),
                   );
               }
             });

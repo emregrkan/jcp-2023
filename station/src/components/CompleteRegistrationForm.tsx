@@ -1,7 +1,7 @@
 import UserContext from "@/context/UserContext";
+import usePush from "@/hooks/usePush";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import { useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,8 +14,8 @@ type Inputs = z.infer<typeof Inputs>;
 
 export default function CompleteRegistrationForm() {
   const { user, setUser } = useContext(UserContext);
-  const router = useRouter();
   const { data: session } = useSession();
+  const push = usePush();
   const {
     register,
     handleSubmit,
@@ -40,15 +40,16 @@ export default function CompleteRegistrationForm() {
     } catch (error) {
       const err = error as AxiosError;
       if (err.response?.status === 401) {
-        router.push("/signin");
+        push("/signin");
       }
     }
     user && setUser({ ...user, inUrl });
-    router.push("/profile");
+    push("/profile");
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <h1>You must provide your LinkedIn url to continue</h1>
       {errors.vanityName && <span>Your LinkedIn profile link is required</span>}
       <input value="https://www.linkedin.com/in/" disabled />
       <input
