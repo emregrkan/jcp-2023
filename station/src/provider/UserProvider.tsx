@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import UserContext from "@/context/UserContext";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import axios, { AxiosError } from "axios";
 import { User } from "@/types/auth";
 import usePush from "@/hooks/usePush";
@@ -24,12 +24,16 @@ export default function UserProvider({
     session.status === "authenticated" &&
       !loaded &&
       (async () => {
-        if (!refreshed) {
+        if (!refreshed && session.data.user.accessToken) {
           await update({ refresh: true });
           setRefreshed(true);
+          return;
+        } else if (!refreshed && !session.data.user.accessToken) {
+          await signOut();
+          return;
         }
 
-        if (refreshed && session.data.user.id) {
+        if (refreshed && session.data.user.id && session.data.user.accessToken) {
           let inUrl: string | undefined;
 
           if (!session.data.user.operator) {
@@ -53,6 +57,7 @@ export default function UserProvider({
             id: session.data.user.id,
             name: session.data.user.name,
             operator: session.data.user.operator,
+            picture: session.data.user.picture,
             inUrl,
           });
           setLoaded(true);

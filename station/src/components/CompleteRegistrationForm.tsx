@@ -28,6 +28,7 @@ export default function CompleteRegistrationForm() {
       await axios.put(
         `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/in-user/${user?.id}`,
         {
+          ...user,
           inUrl,
         },
         {

@@ -1,10 +1,7 @@
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   return (
-    <main>
+    <main className="bg-base-100">
       <p>Hi</p>
     </main>
   );

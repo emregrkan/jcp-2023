@@ -5,6 +5,7 @@ import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
+  Account,
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import KeycloakProvider from "next-auth/providers/keycloak";
@@ -22,6 +23,7 @@ declare module "next-auth" {
     name: string;
     accessToken?: string;
     operator: boolean;
+    picture: any;
   }
 
   interface Session extends DefaultSession {
@@ -68,6 +70,8 @@ export const authOptions: NextAuthOptions = {
             },
           };
 
+          token.picture = await getProfilePicture(account);
+
           if (token.sub) {
             axios.get(`${url}/${token.sub}`, authOptions).catch((err) => {
               const error = err as AxiosError;
@@ -78,6 +82,8 @@ export const authOptions: NextAuthOptions = {
                   .post(
                     url,
                     {
+                      fullName: token.name,
+                      profilePicture: token.picture,
                       inUrl: null,
                     },
                     authOptions,
@@ -109,6 +115,7 @@ export const authOptions: NextAuthOptions = {
         name: token.name,
         accessToken: token.accessToken,
         operator: token.operator ?? false,
+        picture: token.picture,
       },
     }),
   },
@@ -154,4 +161,38 @@ async function refreshToken(token: JWT): Promise<JWT> {
     refreshToken: resp.data.refresh_token,
     expiresAt: Date.now() + resp.data.expires_in * 1000,
   };
+}
+
+async function getProfilePicture(
+  account: Account,
+): Promise<string | undefined> {
+  return axios
+    .get(`${process.env.KEYCLOAK_ISSUER_URL}/broker/linkedin/token`, {
+      headers: {
+        Authorization: `Bearer ${account.access_token}`,
+      },
+    })
+    .then((tk) =>
+      axios
+        .get(
+          "https://api.linkedin.com/v2/me?projection=(id,profilePicture(displayImage~digitalmediaAsset:playableStreams))",
+          {
+            headers: {
+              Authorization: `Bearer ${tk.data.access_token}`,
+            },
+          },
+        )
+        .then(
+          (pic) =>
+            pic.data.profilePicture["displayImage~"].elements
+              .pop()
+              .identifiers.pop().identifier,
+        )
+        .catch((err) =>
+          console.log("src/config/auth.ts: Error: ", err as AxiosError),
+        ),
+    )
+    .catch((err) =>
+      console.log("src/config/auth.ts: Error: ", err as AxiosError),
+    );
 }

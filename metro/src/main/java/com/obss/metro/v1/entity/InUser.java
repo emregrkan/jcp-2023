@@ -21,6 +21,10 @@ public class InUser {
     @Id
     private UUID id;
 
+    private String firstName;
+    private String lastName;
+    private String profilePicture;
+
     @Column(unique = true)
     private String inUrl;
 
