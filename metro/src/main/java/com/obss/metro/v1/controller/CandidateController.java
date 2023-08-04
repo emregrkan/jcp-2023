@@ -25,10 +25,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Slf4j
 public class CandidateController {
   private final CandidateService candidateService;
-  
+
   @PostMapping(consumes = "application/json")
   public ResponseEntity<String> postCandidate(
-          @NotNull @RequestBody final CandidateRequestDTO userDTO, @NotNull final Principal principal) {
+      @NotNull @RequestBody final CandidateRequestDTO userDTO, @NotNull final Principal principal) {
     final CandidateResponseDTO user = candidateService.saveCandidate(userDTO, principal.getName());
     final URI location =
         ServletUriComponentsBuilder.fromCurrentRequestUri()
@@ -44,9 +44,11 @@ public class CandidateController {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     return candidateService.findCandidateById(id, auth);
   }
-  
+
   @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-  public void postCandidateURLById(@PathVariable final String id, @NotNull @RequestParam final Map<String, String> body) throws JsonProcessingException {
+  public void postCandidateURLById(
+      @PathVariable final String id, @NotNull @RequestParam final Map<String, String> body)
+      throws JsonProcessingException {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     candidateService.fetchCandidateProfile(id, body.get("url"), auth);
   }

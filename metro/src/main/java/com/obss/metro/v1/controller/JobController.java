@@ -84,7 +84,7 @@ public class JobController {
   }
 
   @GetMapping("/{id}")
-  public JobResponseDTO getJobById(@PathVariable Long id) {
+  public JobResponseDTO getJobById(@PathVariable UUID id) {
     return jobService.findJobById(id);
   }
 
@@ -92,19 +92,19 @@ public class JobController {
   @PreAuthorize("hasRole('OPERATOR')")
   public JobResponseDTO putJobById(
       @RequestBody JobRequestDTO requestDTO,
-      @PathVariable Long id,
+      @PathVariable UUID id,
       @NotNull final Principal principal) {
     return jobService.updateJobById(requestDTO, id, UUID.fromString(principal.getName()));
   }
 
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('OPERATOR')")
-  public void deleteJobById(@PathVariable Long id, @NotNull final Principal principal) {
+  public void deleteJobById(@PathVariable UUID id, @NotNull final Principal principal) {
     jobService.removeJobById(id, UUID.fromString(principal.getName()));
   }
 
   @GetMapping("/{id}/applications")
-  public Set<JobApplicationListResponseDTO> listJobApplicationsByJobId(@PathVariable Long id) {
+  public Set<JobApplicationListResponseDTO> listJobApplicationsByJobId(@PathVariable UUID id) {
     return jobService.findAllApplicationsById(id);
   }
 }

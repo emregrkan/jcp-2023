@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JobRepository extends JpaRepository<Job, Long> {
+public interface JobRepository extends JpaRepository<Job, UUID> {
   /**
    * Sets Job status as {@link Job.Status#REMOVED}
    *
@@ -23,7 +23,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
   @Transactional
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query("update Job as j set j.status='REMOVED' where j.id=:id")
-  void removeJobById(@Param("id") final Long id);
+  void removeJobById(@Param("id") final UUID id);
 
   /**
    * Updates {@link Job.Status#ACTIVE}, expired Jobs by updating their status as {@link
@@ -44,5 +44,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
    * @see Job#posterId
    */
   @Query("select j.posterId from Job as j where j.id = :id")
-  Optional<UUID> findPosterIdById(@Param("id") final Long id);
+  Optional<UUID> findPosterIdById(@Param("id") final UUID id);
 }

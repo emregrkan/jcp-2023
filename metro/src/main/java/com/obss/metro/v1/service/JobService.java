@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +53,7 @@ public class JobService {
     return JobResponseDTO.fromJob(jobRepository.save(job));
   }
 
-  public JobResponseDTO findJobById(final Long id) {
+  public JobResponseDTO findJobById(final UUID id) {
     Optional<Job> byId = jobRepository.findById(id);
     return JobResponseDTO.fromJob(
         byId.orElseThrow(
@@ -62,7 +61,7 @@ public class JobService {
   }
 
   public JobResponseDTO updateJobById(
-      final JobRequestDTO requestDTO, final Long id, final UUID posterId)
+      final JobRequestDTO requestDTO, final UUID id, final UUID posterId)
       throws ResponseStatusException {
     final Job job = requestDTO.toJob();
     final Optional<UUID> target = jobRepository.findPosterIdById(id);
@@ -80,7 +79,7 @@ public class JobService {
     throw new ResourceNotFoundException("id", "Resource with requested id not found");
   }
 
-  public void removeJobById(final Long id, final UUID posterId) {
+  public void removeJobById(final UUID id, final UUID posterId) {
     final Optional<UUID> target = jobRepository.findPosterIdById(id);
 
     if (target.isPresent()) {
@@ -94,7 +93,7 @@ public class JobService {
     throw new ResourceNotFoundException("id", "Resource with requested id not found");
   }
 
-  public Set<JobApplicationListResponseDTO> findAllApplicationsById(final Long id) {
+  public Set<JobApplicationListResponseDTO> findAllApplicationsById(final UUID id) {
     return jobRepository
         .findById(id)
         .orElseThrow(
@@ -121,7 +120,7 @@ public class JobService {
   public void test_createJob() {
     final Job job =
         Job.builder()
-            .id(6942031911L)
+            .id(null)
             // todo: probably a new id is required
             .posterId(UUID.fromString("c73e7f0f-a36f-49c8-9cce-2c2f9a80e80e"))
             .title("Java Developer")
@@ -134,16 +133,10 @@ public class JobService {
             .build();
 
     final Candidate user =
-        Candidate.builder()
-            .id(UUID.fromString("8ad0c13d-bf59-4c66-a3cf-699f978f910d"))
-            .build();
+        Candidate.builder().id(UUID.fromString("8ad0c13d-bf59-4c66-a3cf-699f978f910d")).build();
 
     user.addJobApplication(
-        new JobApplication(
-            ThreadLocalRandom.current().nextLong(),
-            user,
-            jobRepository.save(job),
-            JobApplication.Status.SUBMITTED));
+        new JobApplication(null, user, jobRepository.save(job), JobApplication.Status.SUBMITTED));
     userRepository.save(user);
   }
 }

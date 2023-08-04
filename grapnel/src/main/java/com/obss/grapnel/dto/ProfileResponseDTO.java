@@ -1,7 +1,6 @@
 package com.obss.grapnel.dto;
 
 import java.util.List;
-import java.util.UUID;
 
 public record ProfileResponseDTO(
     String id,

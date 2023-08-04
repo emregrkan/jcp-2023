@@ -22,7 +22,7 @@ import org.hibernate.annotations.Where;
 @Setter
 @Builder // dev only
 public class Job {
-  @Id private Long id;
+  @Id @GeneratedValue private UUID id;
 
   @NotNull private UUID posterId;
 
@@ -63,12 +63,6 @@ public class Job {
 
   @OneToMany(mappedBy = "jobApplied", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<JobApplication> applications;
-
-  // todo: replace this with snowflake
-  @PrePersist
-  private void setIdPrePersist() {
-    if (this.id == null) this.id = ThreadLocalRandom.current().nextLong();
-  }
 
   public enum WorkplaceType {
     ON_SITE,

@@ -7,7 +7,7 @@ import java.util.UUID;
 // todo: fix confusion
 // todo: fix all confusions
 public record JobResponseDTO(
-    Long id,
+    UUID id,
     UUID posterId,
     String title,
     Job.WorkplaceType workplaceType,

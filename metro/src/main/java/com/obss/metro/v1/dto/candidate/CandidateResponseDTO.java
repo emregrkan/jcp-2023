@@ -1,7 +1,6 @@
 package com.obss.metro.v1.dto.candidate;
 
 import com.obss.metro.v1.entity.Candidate;
-
 import java.util.UUID;
 
 public record CandidateResponseDTO(
