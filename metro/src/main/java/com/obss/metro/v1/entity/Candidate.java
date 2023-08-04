@@ -1,14 +1,11 @@
 package com.obss.metro.v1.entity;
 
-// todo: is this necessary?
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.*;
 
 @Entity
@@ -17,13 +14,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InUser {
+public class Candidate {
     @Id
     private UUID id;
-
     private String firstName;
     private String lastName;
+    private String email;
     private String profilePicture;
+    private String headline;
+    private String location;
+    private String about;
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<CandidateExperience> experience;
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<CandidateEducation> education;
 
     @Column(unique = true)
     private String inUrl;

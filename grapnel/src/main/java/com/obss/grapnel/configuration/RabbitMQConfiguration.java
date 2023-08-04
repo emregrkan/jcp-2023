@@ -7,7 +7,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfiguration {
     @Bean
+    public Queue queueUserUrl() {
+        return new Queue("q.candidate-url", false);
+    }
+
+    @Bean
     public Queue queueUserProfile() {
-        return new Queue("q.user-profile", false);
+        return new Queue("q.candidate-profile", false);
     }
 }

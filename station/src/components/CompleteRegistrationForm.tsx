@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import qs from "querystring";
 
 const Inputs = z.object({
   vanityName: z.string(),
@@ -25,16 +26,14 @@ export default function CompleteRegistrationForm() {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const inUrl = `https://www.linkedin.com/in/${data.vanityName}`;
     try {
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/in-user/${user?.id}`,
-        {
-          ...user,
-          inUrl,
-        },
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/candidate/${user?.id}`,
+        qs.stringify({
+          url: inUrl
+        }),
         {
           headers: {
             Authorization: `Bearer ${session?.user.accessToken}`,
-            "Content-Type": "application/json",
           },
         },
       );

@@ -3,12 +3,12 @@ package com.obss.metro.v1.service;
 import com.obss.metro.v1.dto.job.JobRequestDTO;
 import com.obss.metro.v1.dto.job.JobResponseDTO;
 import com.obss.metro.v1.dto.jobapplication.JobApplicationListResponseDTO;
-import com.obss.metro.v1.entity.InUser;
+import com.obss.metro.v1.entity.Candidate;
 import com.obss.metro.v1.entity.Job;
 import com.obss.metro.v1.entity.JobApplication;
 import com.obss.metro.v1.exception.impl.ForbiddenException;
 import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
-import com.obss.metro.v1.repository.InUserRepository;
+import com.obss.metro.v1.repository.CandidateRepository;
 import com.obss.metro.v1.repository.JobRepository;
 import jakarta.annotation.PostConstruct;
 import java.sql.Timestamp;
@@ -35,7 +35,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 public class JobService {
   private final JobRepository jobRepository;
-  private final InUserRepository userRepository;
+  private final CandidateRepository userRepository;
 
   /**
    * @param page Page number
@@ -133,8 +133,8 @@ public class JobService {
             .dueDate(Timestamp.valueOf(LocalDateTime.now().plusDays(30)))
             .build();
 
-    final InUser user =
-        InUser.builder()
+    final Candidate user =
+        Candidate.builder()
             .id(UUID.fromString("8ad0c13d-bf59-4c66-a3cf-699f978f910d"))
             .build();
 

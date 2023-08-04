@@ -14,7 +14,7 @@ public class JobApplication {
   
   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "applicant_id")
-  public InUser applicant;
+  public Candidate applicant;
   
   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "jobApplied_id")

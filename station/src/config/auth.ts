@@ -21,6 +21,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     name: string;
+    email: string;
     accessToken?: string;
     operator: boolean;
     picture: any;
@@ -56,14 +57,17 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (account) {
+        // @ts-ignore
+        const { realm_access, email } = (jwt_decode(account.access_token) as any);
         const roles: string[] = account.access_token
-          ? (jwt_decode(account.access_token) as any).realm_access.roles
+          ? realm_access.roles
           : [];
 
+        token.email = email;
         token.operator = roles.includes("ROLE_OPERATOR");
 
         if (!token.operator) {
-          const url = `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/in-user`;
+          const url = `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/candidate`;
           const authOptions = {
             headers: {
               Authorization: `Bearer ${account.access_token}`,
@@ -83,6 +87,7 @@ export const authOptions: NextAuthOptions = {
                     url,
                     {
                       fullName: token.name,
+                      email: token.email,
                       profilePicture: token.picture,
                       inUrl: null,
                     },
@@ -113,6 +118,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         id: token.sub,
         name: token.name,
+        email: token.email,
         accessToken: token.accessToken,
         operator: token.operator ?? false,
         picture: token.picture,

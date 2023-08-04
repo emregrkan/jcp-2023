@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class HtmlUnitConfiguration {
-    @Bean
-    public WebClient webClient() {
+    public WebClient newWebClient() {
         final WebClient webClient = new WebClient(BrowserVersion.EDGE);
         webClient.getCookieManager().setCookiesEnabled(true);
         webClient.getOptions().setJavaScriptEnabled(true);

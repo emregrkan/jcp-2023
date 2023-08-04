@@ -39,7 +39,7 @@ export default function UserProvider({
           if (!session.data.user.operator) {
             try {
               const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/in-user/${session.data.user.id}`,
+                `${process.env.NEXT_PUBLIC_RESOURCE_BASE}/candidate/${session.data.user.id}`,
                 {
                   headers: {
                     Authorization: `Bearer ${session.data.user.accessToken}`,
