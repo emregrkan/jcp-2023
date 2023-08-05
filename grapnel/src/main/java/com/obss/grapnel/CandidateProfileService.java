@@ -21,21 +21,29 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CandidateProfileService {
   private final HtmlUnitConfiguration htmlUnit;
+  private final Pattern durationPattern =
+      Pattern.compile("[A-Za-z]{3}\\s\\d{4}\\s-\\s(?:[A-Za-z]{3}\\s\\d{4}|Present)");
 
-  private static String tcn(final DomNode node) {
+  private String tcn(final DomNode node) {
     return node != null ? node.getTextContent().trim() : null;
   }
 
-  private static String tc(final DomNode node) {
+  private String tc(final DomNode node) {
     return node.getTextContent().trim();
+  }
+
+  private String parseDuration(final DomNode durationNode) {
+    if (durationNode != null) {
+      final Matcher matcher = durationPattern.matcher(tc(durationNode));
+      if (matcher.find()) return matcher.group();
+    }
+    return null;
   }
 
   public ProfileResponseDTO fetchCandidateProfile(final ProfileRequestDTO requestDTO)
       throws IOException {
     final WebClient webClient = htmlUnit.newWebClient();
     final HtmlPage page = webClient.getPage(requestDTO.url());
-    final Pattern durationPattern =
-        Pattern.compile("[A-Za-z]{3}\\s\\d{4}\\s-\\s(?:[A-Za-z]{3}\\s\\d{4}|Present)");
 
     final DomNode headlineNode = page.querySelector(".top-card-layout__headline");
     final DomNode locationNode = page.querySelector(".top-card-layout__first-subline");
@@ -58,20 +66,19 @@ public class CandidateProfileService {
                   final DomNode durationNode =
                       node.querySelector(".experience-item__duration span");
 
-                  String companyName = null, companyPage = null, duration = null;
+                  String companyName = null, companyPage = null;
 
                   if (anchor != null) {
                     companyPage = anchor.getHrefAttribute().trim().split("\\?")[0];
                     companyName = anchor.getTextContent().trim();
                   }
 
-                  if (durationNode != null) {
-                    final Matcher matcher = durationPattern.matcher(tc(durationNode));
-                    while (matcher.find()) duration = matcher.group();
-                  }
-
                   return new ProfileResponseDTO.CandidateExperience(
-                      tcn(titleNode), companyName, companyPage, tcn(jobLocationNode), duration);
+                      tcn(titleNode),
+                      companyName,
+                      companyPage,
+                      tcn(jobLocationNode),
+                      parseDuration(durationNode));
                 })
             .filter(exp -> exp != null && exp.title() != null)
             .toList();
@@ -88,7 +95,7 @@ public class CandidateProfileService {
                   final DomNode durationNode = node.querySelector(".education__item--duration");
 
                   final String degreeField = tcn(degreeNode);
-                  String degree = null, field = null, duration = tcn(durationNode);
+                  String degree = null, field = null;
 
                   if (degreeField != null) {
                     final String[] split = degreeField.split("(?<=\\p{Ll})(?=\\p{Lu})");
@@ -100,13 +107,8 @@ public class CandidateProfileService {
                     }
                   }
 
-                  if (durationNode != null) {
-                    final Matcher matcher = durationPattern.matcher(tc(durationNode));
-                    while (matcher.find()) duration = matcher.group();
-                  }
-
                   return new ProfileResponseDTO.CandidateEducation(
-                      tcn(schoolNode), field, degree, duration);
+                      tcn(schoolNode), field, degree, parseDuration(durationNode));
                 })
             .filter(edu -> edu != null && edu.school() != null)
             .toList();
