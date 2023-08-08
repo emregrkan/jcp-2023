@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -24,7 +23,9 @@ import org.hibernate.annotations.Where;
 public class Job {
   @Id @GeneratedValue private UUID id;
 
-  @NotNull private UUID posterId;
+  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinColumn(name = "department_id")
+  public Department department;
 
   @NotNull private String title;
 
@@ -45,6 +46,8 @@ public class Job {
     I think fetched data will be merged on front end? maybe even Job
     should be on elasticsearch as well? I'm not sure...
   */
+  @Basic(fetch = FetchType.LAZY)
+  @Column(columnDefinition = "text")
   private String details;
 
   @NotNull

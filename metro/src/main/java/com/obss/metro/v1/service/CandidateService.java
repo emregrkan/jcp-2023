@@ -2,28 +2,26 @@ package com.obss.metro.v1.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.obss.metro.v1.dto.candidate.CandidateRequestDTO;
-import com.obss.metro.v1.dto.candidate.CandidateResponseDTO;
-import com.obss.metro.v1.dto.candidate.ProfileRequestDTO;
-import com.obss.metro.v1.dto.candidate.ProfileResponseDTO;
+import com.obss.metro.v1.dto.candidate.*;
+import com.obss.metro.v1.dto.jobapplication.JobApplicationResponseDTO;
 import com.obss.metro.v1.entity.Candidate;
 import com.obss.metro.v1.entity.CandidateEducation;
 import com.obss.metro.v1.entity.CandidateExperience;
-import com.obss.metro.v1.exception.impl.ForbiddenException;
 import com.obss.metro.v1.exception.impl.ResourceNotFoundException;
-import com.obss.metro.v1.exception.impl.UnauthorizedException;
 import com.obss.metro.v1.repository.CandidateRepository;
 import jakarta.validation.constraints.NotNull;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -83,42 +81,86 @@ public class CandidateService {
 
       candidateRepository.save(candidate);
     } catch (Exception ignore) {
-      log.error("Could not fetch the requested profile");
+      try {
+        final ProfileRequestDTO failedRequestDTO =
+            objectMapper.readValue(responseDto, ProfileRequestDTO.class);
+        log.error("Could not fetch the requested profile. ID: %s".formatted(failedRequestDTO.id()));
+      } catch (Exception ex) {
+        log.error("Request failed on crawler");
+      }
     }
   }
 
-  public CandidateResponseDTO saveCandidate(
-      @NotNull final CandidateRequestDTO userDTO, @NotNull final String id) {
-    final Candidate user = userDTO.toCandidate(UUID.fromString(id));
-    return CandidateResponseDTO.fromCandidate(candidateRepository.save(user));
+  public void saveCandidate(@NotNull final CandidateAuthRequestDTO dto, @NotNull final String id) {
+    final Candidate user = dto.toCandidate(UUID.fromString(id));
+    candidateRepository.save(user);
   }
 
-  public void fetchCandidateProfile(
-      @NotNull final String id, @NotNull final String url, @NotNull final Authentication auth)
+  public void fetchCandidateProfile(@NotNull final String id, @NotNull final String url)
       throws JsonProcessingException {
+    if (!candidateRepository.existsById(UUID.fromString(id))) {
+      throw new ResourceNotFoundException("id", "Resource with requested id not found");
+    }
+
     final ProfileRequestDTO requestDTO = new ProfileRequestDTO(id, url);
-    final Jwt token = (Jwt) auth.getPrincipal();
-
-    if (!token.getSubject().equals(id)) throw new UnauthorizedException();
-
     rabbitTemplate.convertAndSend("q.candidate-url", objectMapper.writeValueAsBytes(requestDTO));
   }
 
-  public CandidateResponseDTO findCandidateById(
-      @NotNull final UUID id, @NotNull final Authentication auth) {
-    final Optional<Candidate> user = candidateRepository.findById(id);
+  public CandidateAuthResponseDTO findCurrentCandidate(final String id) {
+    final Candidate candidate =
+        candidateRepository
+            .findById(UUID.fromString(id))
+            .orElseThrow(
+                () -> new ResourceNotFoundException("id", "Resource with requested id not found"));
+    return new CandidateAuthResponseDTO(
+        candidate.getId(),
+        candidate.getFirstName(),
+        candidate.getLastName(),
+        candidate.getEmail(),
+        candidate.getProfilePicture(),
+        candidate.getInUrl());
+  }
 
-    if (user.isEmpty()) {
-      throw new ResourceNotFoundException("id", "Candidate with given id not found");
-    }
+  public Callable<ProfileResponseDTO> findCurrentCandidateProfile(final String id) {
+    return () -> {
+      try {
+        while (true) {
+          final Candidate candidate =
+              candidateRepository
+                  .findById(UUID.fromString(id))
+                  .orElseThrow(
+                      () ->
+                          new ResourceNotFoundException(
+                              "id", "Resource with requested id not found"));
+          if (candidate.getHeadline() != null) return ProfileResponseDTO.fromCandidate(candidate);
+          Thread.sleep(420);
+        }
+      } catch (InterruptedException ex) {
+        log.error("Interrupted: %s".formatted(ex.getMessage()));
+        return null;
+      }
+    };
+  }
 
-    final String sub = ((Jwt) auth.getPrincipal()).getSubject();
-    if (!Objects.equals(user.get().getId().toString(), sub)
-        || auth.getAuthorities().stream()
-            .anyMatch(role -> role.getAuthority().equals("ROLE_OPERATOR"))) {
-      throw new ForbiddenException();
-    }
+  public Set<JobApplicationResponseDTO> findCurrentCandidateApplications(final String id) {
+    final Candidate candidate =
+        candidateRepository
+            .findById(UUID.fromString(id))
+            .orElseThrow(
+                () -> new ResourceNotFoundException("id", "Resource with requested id not found"));
 
-    return CandidateResponseDTO.fromCandidate(user.get());
+    return candidate.getApplications().stream()
+        .map(JobApplicationResponseDTO::fromJobApplication)
+        .collect(Collectors.toSet());
+  }
+
+  public Page<CandidateFullResponseDTO> findAllCandidates(int page, int candidates) {
+    final PageRequest request = PageRequest.of(page, candidates);
+    return candidateRepository.findAll(request).map(CandidateFullResponseDTO::fromCandidate);
+  }
+
+  public CandidateFullResponseDTO findCandidateById(final UUID id) {
+    final Candidate candidate = candidateRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "Resource with requested id not found"));
+    return CandidateFullResponseDTO.fromCandidate(candidate);
   }
 }

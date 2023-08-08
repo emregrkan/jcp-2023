@@ -37,12 +37,4 @@ public interface JobRepository extends JpaRepository<Job, UUID> {
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query("update Job set status='CLOSED' where dueDate < current_timestamp and status='ACTIVE'")
   void findAndUpdateActiveExpired(); // todo: return updated ids to log
-
-  /**
-   * @param id The job id
-   * @return Optional of PosterId
-   * @see Job#posterId
-   */
-  @Query("select j.posterId from Job as j where j.id = :id")
-  Optional<UUID> findPosterIdById(@Param("id") final UUID id);
 }

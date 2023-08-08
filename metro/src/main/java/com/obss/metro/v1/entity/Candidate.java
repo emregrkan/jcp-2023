@@ -1,5 +1,6 @@
 package com.obss.metro.v1.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.List;
@@ -42,9 +43,4 @@ public class Candidate {
 
   @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<JobApplication> applications;
-
-  public void addJobApplication(final JobApplication jobApplication) {
-    if (applications == null) applications = new HashSet<>();
-    applications.add(jobApplication);
-  }
 }

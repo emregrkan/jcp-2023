@@ -1,6 +1,8 @@
 package com.obss.grapnel;
 
 import com.obss.grapnel.configuration.HtmlUnitConfiguration;
+import com.obss.grapnel.dto.CandidateEducationDTO;
+import com.obss.grapnel.dto.CandidateExperienceDTO;
 import com.obss.grapnel.dto.ProfileRequestDTO;
 import com.obss.grapnel.dto.ProfileResponseDTO;
 import java.io.IOException;
@@ -73,7 +75,7 @@ public class CandidateProfileService {
                     companyName = anchor.getTextContent().trim();
                   }
 
-                  return new ProfileResponseDTO.CandidateExperience(
+                  return new CandidateExperienceDTO(
                       tcn(titleNode),
                       companyName,
                       companyPage,
@@ -107,8 +109,8 @@ public class CandidateProfileService {
                     }
                   }
 
-                  return new ProfileResponseDTO.CandidateEducation(
-                      tcn(schoolNode), field, degree, parseDuration(durationNode));
+                    return new CandidateEducationDTO(
+                      tcn(schoolNode), field, degree, tcn(durationNode));
                 })
             .filter(edu -> edu != null && edu.school() != null)
             .toList();

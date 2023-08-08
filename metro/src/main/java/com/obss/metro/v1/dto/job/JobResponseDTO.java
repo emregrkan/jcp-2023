@@ -8,8 +8,8 @@ import java.util.UUID;
 // todo: fix all confusions
 public record JobResponseDTO(
     UUID id,
-    UUID posterId,
     String title,
+    String department,
     Job.WorkplaceType workplaceType,
     String location,
     Job.Type type,
@@ -20,8 +20,8 @@ public record JobResponseDTO(
   public static JobResponseDTO fromJob(final Job job) {
     return new JobResponseDTO(
         job.getId(),
-        job.getPosterId(),
         job.getTitle(),
+        job.getDepartment().getName(),
         job.getWorkplaceType(),
         job.getLocation(),
         job.getType(),

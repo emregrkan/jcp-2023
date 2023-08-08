@@ -1,5 +1,9 @@
 package com.obss.metro.v1.dto.candidate;
 
+import com.obss.metro.v1.entity.Candidate;
+import com.obss.metro.v1.entity.CandidateEducation;
+import com.obss.metro.v1.entity.CandidateExperience;
+
 import java.util.List;
 
 public record ProfileResponseDTO(
@@ -8,10 +12,21 @@ public record ProfileResponseDTO(
     String headline,
     String location,
     String about,
-    List<CandidateExperience> experience,
-    List<CandidateEducation> education) {
-  public record CandidateExperience(
-      String title, String companyName, String companyPage, String location, String duration) {}
+    List<CandidateExperienceDTO> experience,
+    List<CandidateEducationDTO> education) {
 
-  public record CandidateEducation(String school, String field, String degree, String duration) {}
+  public static ProfileResponseDTO fromCandidate(final Candidate candidate) {
+    return new ProfileResponseDTO(
+        candidate.getId().toString(),
+        candidate.getInUrl(),
+        candidate.getHeadline(),
+        candidate.getLocation(),
+        candidate.getAbout(),
+        candidate.getExperience().stream()
+            .map(CandidateExperienceDTO::fromCandidateExperience)
+            .toList(),
+        candidate.getEducation().stream()
+            .map(CandidateEducationDTO::fromCandidateEducation)
+            .toList());
+  }
 }

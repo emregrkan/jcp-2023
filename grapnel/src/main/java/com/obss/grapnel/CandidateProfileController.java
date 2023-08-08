@@ -26,7 +26,8 @@ public class CandidateProfileController {
       log.info("Request: {id: %s, url: %s}".formatted(requestDTO.id(), requestDTO.url()));
       return objectMapper.writeValueAsBytes(responseDTO);
     } catch (Exception ignore) {
-      return "{error:\"Could not fetch the requested profile\"}".getBytes();
+      log.error("Failed to fetch the requested profile");
+      return dto;
     }
   }
 }

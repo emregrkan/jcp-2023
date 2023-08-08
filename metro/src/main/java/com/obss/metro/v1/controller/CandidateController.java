@@ -1,55 +1,86 @@
 package com.obss.metro.v1.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.obss.metro.v1.dto.candidate.CandidateRequestDTO;
-import com.obss.metro.v1.dto.candidate.CandidateResponseDTO;
+import com.obss.metro.v1.dto.candidate.CandidateAuthRequestDTO;
+import com.obss.metro.v1.dto.candidate.CandidateAuthResponseDTO;
+import com.obss.metro.v1.dto.candidate.CandidateFullResponseDTO;
+import com.obss.metro.v1.dto.candidate.ProfileResponseDTO;
+import com.obss.metro.v1.dto.job.JobResponseDTO;
+import com.obss.metro.v1.dto.jobapplication.JobApplicationResponseDTO;
 import com.obss.metro.v1.service.CandidateService;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/v1/candidate")
+@RequestMapping("/api/v1/candidates")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class CandidateController {
   private final CandidateService candidateService;
 
   @PostMapping(consumes = "application/json")
-  public ResponseEntity<String> postCandidate(
-      @NotNull @RequestBody final CandidateRequestDTO userDTO, @NotNull final Principal principal) {
-    final CandidateResponseDTO user = candidateService.saveCandidate(userDTO, principal.getName());
+  public ResponseEntity<Object> postCandidate(
+          @NotNull @RequestBody final CandidateAuthRequestDTO dto, @NotNull final Principal principal) {
+    candidateService.saveCandidate(dto, principal.getName());
+
     final URI location =
         ServletUriComponentsBuilder.fromCurrentRequestUri()
-            .path("/%s".formatted(user.id()))
+            .path("/%s".formatted(principal.getName()))
             .build()
             .toUri();
 
-    return ResponseEntity.created(location).body("ok");
+    return ResponseEntity.created(location).body(Optional.empty());
+  }
+
+  @PostMapping(value = "/me/url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  public void postCandidateURLById(@NotNull @RequestParam final Map<String, String> body, @NotNull final Principal principal)
+      throws JsonProcessingException {
+    candidateService.fetchCandidateProfile(principal.getName(), body.get("url"));
+  }
+
+  @GetMapping("/me")
+  public CandidateAuthResponseDTO getCurrentCandidate(@NotNull final Principal principal) {
+    return candidateService.findCurrentCandidate(principal.getName());
+  }
+
+  @GetMapping("/me/profile")
+  public Callable<ProfileResponseDTO> getCurrentCandidateProfile(@NotNull final Principal principal) {
+    return candidateService.findCurrentCandidateProfile(principal.getName());
+  }
+
+  @GetMapping("/me/applications")
+  public Set<JobApplicationResponseDTO> getCurrentCandidateApplications(@NotNull final Principal principal) {
+    return candidateService.findCurrentCandidateApplications(principal.getName());
+  }
+
+  @GetMapping
+  @PreAuthorize("hasRole('OPERATOR')")
+  public Page<CandidateFullResponseDTO> getAllCandidatesPaged(@RequestParam Optional<Integer> page, @RequestParam Optional<Integer> candidates) {
+    int pageNumber = page.orElse(0);
+    int candidatesSize = candidates.orElse(9);
+
+    return candidateService.findAllCandidates(pageNumber, candidatesSize);
   }
 
   @GetMapping("/{id}")
-  public CandidateResponseDTO getCandidateById(@PathVariable UUID id) {
-    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    return candidateService.findCandidateById(id, auth);
-  }
-
-  @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-  public void postCandidateURLById(
-      @PathVariable final String id, @NotNull @RequestParam final Map<String, String> body)
-      throws JsonProcessingException {
-    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    candidateService.fetchCandidateProfile(id, body.get("url"), auth);
+  @PreAuthorize("hasRole('OPERATOR')")
+  public CandidateFullResponseDTO getCandidateById(@PathVariable UUID id) {
+    return candidateService.findCandidateById(id);
   }
 }

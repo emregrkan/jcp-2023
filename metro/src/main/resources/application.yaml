@@ -19,3 +19,19 @@ spring:
         jwt:
           issuer-uri: http://localhost:9090/realms/bouncer
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+  mvc:
+    async:
+      request-timeout: 42069
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_EMAIL}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
