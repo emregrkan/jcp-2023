@@ -14,7 +14,7 @@ objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-cn: Ben Alex
+cn: Ben
 sn: Alex
 uid: ben
 userPassword: {SSHA}rU8huSz7DKWuhtyLs5eVNmxFo7LHE6Bg
@@ -34,7 +34,7 @@ objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
-cn: Emre Gürkan
+cn: Emre
 sn: Gürkan
 uid: admin
 userPassword: {SSHA}cj9C+19uRdaoiCyhfL7l+TYDlcuEEL27

@@ -3,6 +3,8 @@ package com.obss.metro.v1.repository;
 import com.obss.metro.v1.entity.Job;
 import com.obss.metro.v1.service.JobService;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JobRepository extends JpaRepository<Job, Long> {
+public interface JobRepository extends JpaRepository<Job, UUID> {
   /**
    * Sets Job status as {@link Job.Status#REMOVED}
    *
@@ -21,7 +23,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
   @Transactional
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query("update Job as j set j.status='REMOVED' where j.id=:id")
-  void removeJobById(@Param("id") final Long id);
+  void removeJobById(@Param("id") final UUID id);
 
   /**
    * Updates {@link Job.Status#ACTIVE}, expired Jobs by updating their status as {@link

@@ -2,12 +2,14 @@ package com.obss.metro.v1.dto.job;
 
 import com.obss.metro.v1.entity.Job;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 // todo: fix confusion
 // todo: fix all confusions
 public record JobResponseDTO(
-    Long id,
+    UUID id,
     String title,
+    String department,
     Job.WorkplaceType workplaceType,
     String location,
     Job.Type type,
@@ -19,6 +21,7 @@ public record JobResponseDTO(
     return new JobResponseDTO(
         job.getId(),
         job.getTitle(),
+        job.getDepartment().getName(),
         job.getWorkplaceType(),
         job.getLocation(),
         job.getType(),

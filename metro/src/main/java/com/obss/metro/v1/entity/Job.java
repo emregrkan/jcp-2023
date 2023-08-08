@@ -5,24 +5,27 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.UUID;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
 // todo: validation
+// todo: hr user??
 @Entity
-@Where(clause = "status!='REMOVED'")
+@Where(clause = "status != 'REMOVED'")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder // dev only
 public class Job {
-  @Id private Long id;
+  @Id @GeneratedValue private UUID id;
+
+  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinColumn(name = "department_id")
+  public Department department;
 
   @NotNull private String title;
 
@@ -39,10 +42,12 @@ public class Job {
 
   /*
    todo: probably content shouldn't be stored on postgres
-    but instead on elasticsearch to implement free format text search...
+    but instead elasticsearch to implement free format text search...
     I think fetched data will be merged on front end? maybe even Job
     should be on elasticsearch as well? I'm not sure...
   */
+  @Basic(fetch = FetchType.LAZY)
+  @Column(columnDefinition = "text")
   private String details;
 
   @NotNull
@@ -59,14 +64,8 @@ public class Job {
   @Future(message = "Due date must be in future")
   private Timestamp dueDate;
 
-  @OneToMany private Set<JobApplication> applications;
-
-  @PrePersist
-  private void setIdPrePersist() {
-    if (this.id == null) {
-      this.id = ThreadLocalRandom.current().nextLong();
-    }
-  }
+  @OneToMany(mappedBy = "jobApplied", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private Set<JobApplication> applications;
 
   public enum WorkplaceType {
     ON_SITE,
