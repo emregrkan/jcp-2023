@@ -36,9 +36,7 @@ export default function Jobs() {
   ) : (
     <div>
       <span id="importer" className="hidden grid-cols-2 grid-cols-3" hidden />
-      <h1 className="font-bold text-4xl text-center bg-gradient-to-l from-indigo-800 via-indigo-500 to-indigo-800 bg-clip-text text-transparent p-1">
-        Current Job Openings
-      </h1>
+      <h1 className="font-bold text-4xl text-center">Current Job Openings</h1>
       <form
         className={`mt-8 grid grid-cols-${!!operator + 2} grid-rows-1 gap-4`}
       >

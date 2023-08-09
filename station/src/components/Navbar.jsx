@@ -30,6 +30,11 @@ export default function Navbar() {
               <li>
                 <Link href="/jobs">Jobs</Link>
               </li>
+              {user && user.operator && (
+                <li>
+                  <Link href="/candidates">Candidates</Link>
+                </li>
+              )}
             </ul>
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">

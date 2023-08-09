@@ -1,6 +1,7 @@
 import http from "@/util/axios.util";
 
 export default async function handler(req, res) {
+  console.log(req);
   switch (req.method) {
     case "GET":
       listAllCandidates(req, res);

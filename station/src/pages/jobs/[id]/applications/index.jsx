@@ -2,6 +2,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 const ProfileCard = ({ application, jobId }) => {
@@ -73,7 +74,7 @@ export default function Applications() {
       .then((resp) => resp.data)
       .catch((err) => err);
 
-  const { data } = useSWR(
+  const { data: applications } = useSWR(
     `http://127.0.0.1:3000/api/jobs/${router.query.id}/applications`,
     fetcher
   );
@@ -91,9 +92,9 @@ export default function Applications() {
       <div className="mt-8">
         <h1 className="text-4xl font-extrabold text-center">Applicants</h1>
         <ul className="mt-8">
-          {data &&
-            Array.isArray(data) &&
-            data.map((application) => (
+          {applications &&
+            Array.isArray(applications) &&
+            applications.map((application) => (
               <li key={application.id}>
                 <ProfileCard
                   application={application}
