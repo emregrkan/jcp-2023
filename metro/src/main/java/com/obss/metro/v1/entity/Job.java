@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 // todo: validation
 // todo: hr user??
@@ -21,7 +22,9 @@ import org.hibernate.annotations.Where;
 @Setter
 @Builder // dev only
 public class Job {
-  @Id @GeneratedValue private UUID id;
+  @Id
+  @GeneratedValue
+  private UUID id;
 
   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "department_id")
@@ -40,12 +43,6 @@ public class Job {
   @Enumerated(EnumType.STRING)
   private Job.Type type;
 
-  /*
-   todo: probably content shouldn't be stored on postgres
-    but instead elasticsearch to implement free format text search...
-    I think fetched data will be merged on front end? maybe even Job
-    should be on elasticsearch as well? I'm not sure...
-  */
   @Basic(fetch = FetchType.LAZY)
   @Column(columnDefinition = "text")
   private String details;
@@ -59,6 +56,10 @@ public class Job {
   private Timestamp postedAt;
 
   @UpdateTimestamp private Timestamp updatedAt;
+
+  @NotNull
+  @Future(message = "Activation date must be in future")
+  private Timestamp activationDate;
 
   @NotNull
   @Future(message = "Due date must be in future")

@@ -69,10 +69,23 @@ const EditorButton = ({ id }) => {
   );
 };
 
-const OperatorActions = ({ id, className }) => {
+const OperatorActions = ({ id, status, className }) => {
+  const handleOpenClose = async () => {
+    try {
+      await axios.post(`http://127.0.0.1:3000/api/jobs/${id}/status`, {
+        status: status === "CLOSED" ? "ACTIVE" : "CLOSED",
+      });
+      await mutate(`http://127.0.0.1:3000/api/jobs/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className={className}>
-      <button className="btn">Close</button>
+      <button onClick={handleOpenClose} className="btn">
+        {status === "CLOSED" ? "Open" : "Close"}
+      </button>
       <Link
         className="btn"
         href={{
@@ -89,16 +102,17 @@ const OperatorActions = ({ id, className }) => {
   );
 };
 
-const CandidateActions = ({ id, applications, className }) => {
+const CandidateActions = ({ id, status, applications, className }) => {
   const handleApplication = async () => {
     try {
-      await axios.post(
-        `http://127.0.0.1:3000/api/jobs/${id}/applications`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      status === "ACTIVE" &&
+        (await axios.post(
+          `http://127.0.0.1:3000/api/jobs/${id}/applications`,
+          {},
+          {
+            withCredentials: true,
+          }
+        ));
       await mutate(`http://127.0.0.1:3000/api/auth/me/applications`);
     } catch (err) {
       console.log(err);
@@ -115,23 +129,28 @@ const CandidateActions = ({ id, applications, className }) => {
 
   return (
     <div className={className}>
-      {applied ? (
-        <button className="btn">Applied</button>
+      {status === "ACTIVE" ? (
+        applied ? (
+          <button className="btn">Applied</button>
+        ) : (
+          <button className="btn" onClick={handleApplication}>
+            Apply
+          </button>
+        )
       ) : (
-        <button className="btn" onClick={handleApplication}>
-          Apply
-        </button>
+        <button className="btn">Closed For Now</button>
       )}
     </div>
   );
 };
 
-const Actions = ({ id, operator, applications, className }) => {
+const Actions = ({ id, operator, status, applications, className }) => {
   return operator ? (
-    <OperatorActions id={id} className={className} />
+    <OperatorActions id={id} status={status} className={className} />
   ) : (
     <CandidateActions
       id={id}
+      status={status}
       applications={applications}
       className={className}
     />
@@ -238,7 +257,9 @@ function JobDetails() {
           <Actions
             id={router.query.id}
             operator={operator}
+            status={job.status}
             applications={applications}
+            closed
             className="mt-4 flex justify-center space-x-4"
           />
           <MarkdownView id={router.query.id} operator={operator} />

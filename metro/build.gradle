@@ -24,6 +24,10 @@ repositories {
 }
 
 dependencies {
+    implementation ('org.hibernate.search:hibernate-search-mapper-orm-orm6:6.2.0.Final') {
+        exclude group: 'org.hibernate.common', module: 'hibernate-commons-annotations'
+    }
+    implementation 'org.hibernate.search:hibernate-search-backend-lucene:6.2.0.Final'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 //    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

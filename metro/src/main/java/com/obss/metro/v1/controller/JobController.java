@@ -1,6 +1,7 @@
 package com.obss.metro.v1.controller;
 
 import com.obss.metro.v1.configuration.SecurityConfiguration;
+import com.obss.metro.v1.dto.candidate.CandidateAuthResponseDTO;
 import com.obss.metro.v1.dto.job.JobRequestDTO;
 import com.obss.metro.v1.dto.job.JobResponseDTO;
 import com.obss.metro.v1.dto.jobapplication.JobApplicationListResponseDTO;
@@ -8,6 +9,7 @@ import com.obss.metro.v1.dto.jobapplication.JobApplicationResponseDTO;
 import com.obss.metro.v1.exception.impl.ServerException;
 import com.obss.metro.v1.service.EmailService;
 import com.obss.metro.v1.service.JobService;
+import com.obss.metro.v1.service.SearchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -37,6 +39,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class JobController {
   private final JobService jobService;
   private final EmailService emailService;
+  private final SearchService searchService;
 
   /**
    * @param page Optional query parameter for page number with default value of 1
@@ -102,6 +105,12 @@ public class JobController {
     jobService.removeJobById(id);
   }
 
+  @PostMapping("/{id}/status")
+  @PreAuthorize("hasRole('OPERATOR')")
+  public void closeJobById(@PathVariable UUID id, @RequestBody Map<String, String> body) {
+    jobService.closeJobById(id, body.get("status"));
+  }
+
   @PostMapping("/{id}/applications")
   @PreAuthorize("!hasRole('OPERATOR')")
   public JobApplicationResponseDTO postApplicationById(
@@ -132,6 +141,7 @@ For any questions or feedbacks reply to <a href="mailto:hr@obss.tech">OBSS Human
   }
 
   @GetMapping("/{id}/applications")
+  @PreAuthorize("hasRole('OPERATOR')")
   public Set<JobApplicationListResponseDTO> listJobApplicationsByJobId(@PathVariable UUID id) {
     return jobService.findAllApplicationsById(id);
   }

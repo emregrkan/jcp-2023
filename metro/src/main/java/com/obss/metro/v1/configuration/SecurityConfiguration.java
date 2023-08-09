@@ -38,7 +38,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfiguration {
 
   public static final String SECURITY_CONFIG_NAME = "App Bearer Token";
-  private static final String[] RESOURCE_WHITE_LIST = {"/swagger-ui/**", "/v3/api-docs/**"};
+  private static final String[] RESOURCE_WHITE_LIST = {"/swagger-ui/**", "/v3/api-docs/**", "/actuator/**"};
 
   private final MetroExceptionHandler.RestAuthenticationEntryPoint authenticationEntryPoint;
   private final MetroExceptionHandler.RestForbiddenHandler forbiddenHandler;

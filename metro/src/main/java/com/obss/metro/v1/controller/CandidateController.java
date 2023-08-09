@@ -5,20 +5,17 @@ import com.obss.metro.v1.dto.candidate.CandidateAuthRequestDTO;
 import com.obss.metro.v1.dto.candidate.CandidateAuthResponseDTO;
 import com.obss.metro.v1.dto.candidate.CandidateFullResponseDTO;
 import com.obss.metro.v1.dto.candidate.ProfileResponseDTO;
-import com.obss.metro.v1.dto.job.JobResponseDTO;
 import com.obss.metro.v1.dto.jobapplication.JobApplicationResponseDTO;
+import com.obss.metro.v1.entity.Candidate;
 import com.obss.metro.v1.service.CandidateService;
+import com.obss.metro.v1.service.SearchService;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.security.Principal;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -33,10 +30,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Slf4j
 public class CandidateController {
   private final CandidateService candidateService;
+  private final SearchService searchService;
+
+  @GetMapping("/search")
+  public Set<CandidateAuthResponseDTO> searchCandidates(
+      @RequestParam Optional<String> q) {
+    return searchService.findCandidates(q);
+  }
 
   @PostMapping(consumes = "application/json")
   public ResponseEntity<Object> postCandidate(
-          @NotNull @RequestBody final CandidateAuthRequestDTO dto, @NotNull final Principal principal) {
+      @NotNull @RequestBody final CandidateAuthRequestDTO dto, @NotNull final Principal principal) {
     candidateService.saveCandidate(dto, principal.getName());
 
     final URI location =
@@ -49,7 +53,8 @@ public class CandidateController {
   }
 
   @PostMapping(value = "/me/url", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-  public void postCandidateURLById(@NotNull @RequestParam final Map<String, String> body, @NotNull final Principal principal)
+  public void postCandidateURLById(
+      @NotNull @RequestParam final Map<String, String> body, @NotNull final Principal principal)
       throws JsonProcessingException {
     candidateService.fetchCandidateProfile(principal.getName(), body.get("url"));
   }
@@ -60,18 +65,21 @@ public class CandidateController {
   }
 
   @GetMapping("/me/profile")
-  public Callable<ProfileResponseDTO> getCurrentCandidateProfile(@NotNull final Principal principal) {
+  public Callable<ProfileResponseDTO> getCurrentCandidateProfile(
+      @NotNull final Principal principal) {
     return candidateService.findCurrentCandidateProfile(principal.getName());
   }
 
   @GetMapping("/me/applications")
-  public Set<JobApplicationResponseDTO> getCurrentCandidateApplications(@NotNull final Principal principal) {
+  public Set<JobApplicationResponseDTO> getCurrentCandidateApplications(
+      @NotNull final Principal principal) {
     return candidateService.findCurrentCandidateApplications(principal.getName());
   }
 
   @GetMapping
   @PreAuthorize("hasRole('OPERATOR')")
-  public Page<CandidateFullResponseDTO> getAllCandidatesPaged(@RequestParam Optional<Integer> page, @RequestParam Optional<Integer> candidates) {
+  public Page<CandidateFullResponseDTO> getAllCandidatesPaged(
+      @RequestParam Optional<Integer> page, @RequestParam Optional<Integer> candidates) {
     int pageNumber = page.orElse(0);
     int candidatesSize = candidates.orElse(9);
 

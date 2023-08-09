@@ -38,7 +38,7 @@ public class JobService {
   private final DepartmentRepository departmentRepository;
 
   /**
-   * @param page Page numberFr
+   * @param page Page number
    * @param jobs Number of job posts in a page
    * @return Set of jobs with given parameters
    * @author <a href="mailto:emre-gurkan@hotmail.com">Emre Gürkan</a>
@@ -126,6 +126,13 @@ public class JobService {
     return JobApplicationResponseDTO.fromJobApplication(application);
   }
 
+  @Transactional
+  public void closeJobById(final UUID id, final String status) {
+    final Job job = jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "Resource with requested id not found"));
+    job.setStatus(Job.Status.valueOf(status));
+    jobRepository.save(job);
+  }
+
   /**
    * Scheduled: Runs {@link JobRepository#findAndUpdateActiveExpired()} top of every hour
    * automatically; marks the expired Jobs
@@ -136,6 +143,11 @@ public class JobService {
   @Scheduled(cron = "0 0 * * * *")
   public void updateExpired() {
     jobRepository.findAndUpdateActiveExpired();
+  }
+
+  @Scheduled(cron = "0 0 * * * *")
+  public void activationSchedule() {
+    jobRepository.findAndActivateScheduled();
   }
 
 //  @PostConstruct
