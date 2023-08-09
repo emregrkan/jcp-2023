@@ -30,9 +30,13 @@ export default function Navbar() {
               <li>
                 <Link href="/jobs">Jobs</Link>
               </li>
-              {user && user.operator && (
+              {user && (
                 <li>
-                  <Link href="/candidates">Candidates</Link>
+                  {user.operator ? (
+                    <Link href="/candidates">Candidates</Link>
+                  ) : (
+                    <Link href="/applications">Applications</Link>
+                  )}
                 </li>
               )}
             </ul>

@@ -30,6 +30,8 @@ export default function NewJobPosting() {
         {
           ...data,
           dueDate: new Date(data.dueDate).toISOString(),
+          activationDate:
+            data.activationDate && new Date(data.activationDate).toISOString(),
         },
         {
           withCredentials: true,
@@ -102,6 +104,11 @@ export default function NewJobPosting() {
           <input {...register("status")} value="ACTIVE" hidden />
           <input
             {...register("dueDate")}
+            className="input border border-solid border-base-300"
+            type="date"
+          />
+          <input
+            {...register("activationDate")}
             className="input border border-solid border-base-300"
             type="date"
           />

@@ -57,7 +57,6 @@ public class Job {
 
   @UpdateTimestamp private Timestamp updatedAt;
 
-  @NotNull
   @Future(message = "Activation date must be in future")
   private Timestamp activationDate;
 

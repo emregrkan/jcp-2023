@@ -3,9 +3,8 @@ import useSWR from "swr";
 import Image from "next/image";
 import Link from "next/link";
 import qs from "querystring";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
 import UserContext from "@/context/UserContext";
 
 function Candidate({ candidate }) {
@@ -47,7 +46,6 @@ function Candidate({ candidate }) {
 }
 
 export default function Candidates() {
-  const router = useRouter();
   const { user } = useContext(UserContext);
   const { register, watch } = useForm();
 
