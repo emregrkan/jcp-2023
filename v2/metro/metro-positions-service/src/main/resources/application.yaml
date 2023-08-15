@@ -1,0 +1,35 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: metro-positions-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma}
+    username: ${SPRING_DATASOURCE_USERNAME:thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee}
+    password: ${SPRING_DATASOURCE_PASSWORD:eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah}
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL-AUTO:create-drop}
+    properties:
+      hibernate:
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://${eureka.instance.hostname}:${EUREKA_PORT:8761}/eureka}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - '*'

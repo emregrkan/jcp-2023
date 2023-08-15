@@ -1,0 +1,17 @@
+type Position {
+    id: ID!
+    title: String!
+    about: String
+    experienceLevel: String!
+    positionType: String!
+    workspaceType: String!
+    location: String!
+    status: String!
+    activationDate: String
+    dueDate: String!
+    createdAt: String!
+}
+
+type Query {
+    allPositions: [Position]!
+}
