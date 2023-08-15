@@ -1,0 +1,75 @@
+# todo: add health checks and refactor for production
+services:
+  pg-resource:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
+      POSTGRES_PASSWORD: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
+      POSTGRES_USER: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
+    networks:
+      - metro
+    ports:
+      - 6543:5432
+    healthcheck:
+      test: [ 'CMD', 'pg_isready' ]
+
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
+      POSTGRES_PASSWORD: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
+      POSTGRES_USER: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
+    networks:
+      - metro
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ 'CMD', 'pg_isready' ]
+
+  openldap:
+    image: 'bitnami/openldap:latest'
+    environment:
+      LDAP_ROOT: dc=obss,dc=com
+      LDAP_ADMIN_USERNAME: ievuqu1eiquehabaeleefoo8Zae1eeWeej2iubahvoo1thoqu1ieNgith3Leizaiw4phaosh7deeficiewiuviejeeyohghohkahfieP0aithelooVieke6oongahng4
+      LDAP_ADMIN_PASSWORD: shoonieY8heisah0aequiCien4mi6in4choh8OhJeeng2xoo8caKuigheinauj8wathaeYaich5Aing0osuhohHaijiem9thai4uo0Yoorie5sesech9eemahmohY4phaiz1oo2KiDeegaeng7theethie2ooheex6sielaic2ootooy7ahvoh0ahL5ohxohfooy0aiphahphachuu4Eerein8Waecaixao5Gaceachah2yaegoiphee0ohrohna
+      LDAP_CUSTOM_LDIF_DIR: /ldifs
+    networks:
+      - metro
+    ports:
+      - 1389:1389
+      - 1636:1636
+    volumes:
+      - '/home/egurkan/projects/obss/metro/src/main/resources:/ldifs'
+
+  keycloak:
+    image: 'quay.io/keycloak/keycloak:22.0.1'
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/xiej0boo5iuxah5vieveeh1ojogeiphoo0ahr8aer2ep2oma
+      KC_DB_USERNAME: thikooreesh0peigosh3cieyootaez0eeng2oox3jai6chee
+      KC_DB_PASSWORD: eineethov0aifoa9ohsohw3ohjaipaehienguozohz8eitah
+    command: start-dev
+    networks:
+      - metro
+    ports:
+      - 9090:8080
+    depends_on:
+      - postgres
+      - openldap
+
+  rabbitmq:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - metro
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+networks:
+  metro:
+    driver: bridge
