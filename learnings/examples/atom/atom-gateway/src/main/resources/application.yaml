@@ -1,0 +1,27 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: atom-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://${eureka.instance.hostname}:${EUREKA_PORT:8761}/eureka}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - '*'

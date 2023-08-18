@@ -1,0 +1,5 @@
+- use c4 model (c4model.com)
+- use debezium for profiles too
+- find a better solution for materialized views
+- proxy, reverse proxy?
+- nginx necessary?

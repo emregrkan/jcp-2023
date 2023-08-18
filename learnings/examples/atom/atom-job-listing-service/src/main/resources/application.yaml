@@ -1,0 +1,35 @@
+server:
+  port: ${SERVER_PORT:18080}
+
+spring:
+  application:
+    name: atom-job-listing-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:13306/dNOvuT1joblistings}
+    username: ${SPRING_DATASOURCE_USERNAME:druvagavlwichafiphe4idatiflfruwr}
+    password: ${SPRING_DATASOURCE_PASSWORD:3ufo94cadatra8rlspudupogo2tecraf}
+  jpa:
+    generate-ddl: ${SPRING_JPA_GENERATE_DDL:true}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:true}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVER_URL:localhost:9092}
+
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://${eureka.instance.hostname}:${EUREKA_PORT:8761}/eureka}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - '*'

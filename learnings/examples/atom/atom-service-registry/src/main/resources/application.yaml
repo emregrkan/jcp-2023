@@ -1,0 +1,23 @@
+server:
+  port: ${SERVER_PORT:8761}
+
+spring:
+  application:
+    name: atom-service-registry
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://${eureka.instance.hostname}:${server.port}/eureka}
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - '*'
