@@ -32,3 +32,47 @@ services:
       - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
       - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
       - MYSQL_DATABASE=dNOvuT1joblistings
+
+  RguU3oSkeycloak:
+    image: mysql:latest
+    networks:
+      - keycloak
+    environment:
+      - MYSQL_ROOT_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
+      - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
+      - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
+      - MYSQL_DATABASE=RguU3oSkeycloak
+
+  openldap:
+    image: 'bitnami/openldap:latest'
+    environment:
+      LDAP_ROOT: dc=obss,dc=com
+      LDAP_ADMIN_USERNAME: ievuqu1eiquehabaeleefoo8Zae1eeWeej2iubahvoo1thoqu1ieNgith3Leizaiw4phaosh7deeficiewiuviejeeyohghohkahfieP0aithelooVieke6oongahng4
+      LDAP_ADMIN_PASSWORD: shoonieY8heisah0aequiCien4mi6in4choh8OhJeeng2xoo8caKuigheinauj8wathaeYaich5Aing0osuhohHaijiem9thai4uo0Yoorie5sesech9eemahmohY4phaiz1oo2KiDeegaeng7theethie2ooheex6sielaic2ootooy7ahvoh0ahL5ohxohfooy0aiphahphachuu4Eerein8Waecaixao5Gaceachah2yaegoiphee0ohrohna
+      LDAP_CUSTOM_LDIF_DIR: /ldifs
+    networks:
+      - keycloak
+    volumes:
+      - '/home/egurkan/projects/obss/learnings/examples/atom/resource:/ldifs'
+
+  keycloak:
+    image: 'quay.io/keycloak/keycloak:22.0.1'
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://RguU3oSkeycloak:3306/RguU3oSkeycloak
+      KC_DB_USERNAME: druvagavlwichafiphe4idatiflfruwr
+      KC_DB_PASSWORD: 3ufo94cadatra8rlspudupogo2tecraf
+    command: start-dev
+    networks:
+      - keycloak
+    ports:
+      - '4080:8080'
+    depends_on:
+      - RguU3oSkeycloak
+      - openldap
+
+networks:
+  keycloak:
+    driver: bridge
