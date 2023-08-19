@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -23,7 +24,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-  dNOvuT1joblistings:
+  dNOvuT1_job-listings:
     image: mysql:latest
     ports:
       - '13306:3306'
@@ -31,9 +32,19 @@ services:
       - MYSQL_ROOT_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
       - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
       - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
-      - MYSQL_DATABASE=dNOvuT1joblistings
+      - MYSQL_DATABASE=dNOvuT1
 
-  RguU3oSkeycloak:
+  uUGiUAB_profiles:
+    image: mysql:latest
+    ports:
+      - '23306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
+      - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
+      - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
+      - MYSQL_DATABASE=uUGiUAB
+
+  RguU3oS_keycloak:
     image: mysql:latest
     networks:
       - keycloak
@@ -41,7 +52,7 @@ services:
       - MYSQL_ROOT_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
       - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
       - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
-      - MYSQL_DATABASE=RguU3oSkeycloak
+      - MYSQL_DATABASE=RguU3oS
 
   openldap:
     image: 'bitnami/openldap:latest'
@@ -61,7 +72,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: mysql
-      KC_DB_URL: jdbc:mysql://RguU3oSkeycloak:3306/RguU3oSkeycloak
+      KC_DB_URL: jdbc:mysql://RguU3oS_keycloak:3306/RguU3oS
       KC_DB_USERNAME: druvagavlwichafiphe4idatiflfruwr
       KC_DB_PASSWORD: 3ufo94cadatra8rlspudupogo2tecraf
     command: start-dev
@@ -70,7 +81,7 @@ services:
     ports:
       - '4080:8080'
     depends_on:
-      - RguU3oSkeycloak
+      - RguU3oS_keycloak
       - openldap
 
 networks:
