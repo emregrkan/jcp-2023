@@ -1,11 +1,11 @@
 server:
-  port: ${SERVER_PORT:18080}
+  port: ${SERVER_PORT:28080}
 
 spring:
   application:
-    name: atom-job-listing-service
+    name: atom-profile-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:13306/dNOvuT1}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:23306/uUGiUAB}
     username: ${SPRING_DATASOURCE_USERNAME:druvagavlwichafiphe4idatiflfruwr}
     password: ${SPRING_DATASOURCE_PASSWORD:3ufo94cadatra8rlspudupogo2tecraf}
   jpa:

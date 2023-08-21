@@ -1,0 +1,40 @@
+dn: dc=obss,dc=com
+objectClass: top
+objectClass: domain
+objectClass: extensibleObject
+dc: obss
+
+dn: ou=people,dc=obss,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=ben,ou=people,dc=obss,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Ben
+sn: Alex
+uid: ben
+userPassword: {SSHA}rU8huSz7DKWuhtyLs5eVNmxFo7LHE6Bg
+
+dn: uid=test,ou=people,dc=obss,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Test
+sn: Test
+uid: test
+userPassword: {SSHA}lhU6qCx4YKAYZE2Dr+usOiZbkJ/ukIi+
+
+dn: uid=admin,ou=people,dc=obss,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Emre
+sn: Gürkan
+uid: admin
+userPassword: {SSHA}cj9C+19uRdaoiCyhfL7l+TYDlcuEEL27
