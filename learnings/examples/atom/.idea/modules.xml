@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/atom.iml" filepath="$PROJECT_DIR$/.idea/atom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/atom-applicant-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/atom-applicant-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/atom-job-listing-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/atom-job-listing-service.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/atom-profile-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/atom-profile-service.main.iml" />
     </modules>
   </component>
 </project>

@@ -4,6 +4,14 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/atom-applicant-service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/atom-applicant-service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/atom-gateway" />
         <option name="modules">
           <set>
@@ -16,14 +24,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/atom-job-listing-service" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/atom-profile-service" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/atom-profile-service" />
           </set>
         </option>
       </GradleProjectSettings>

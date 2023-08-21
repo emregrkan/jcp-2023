@@ -24,7 +24,7 @@ public class KafkaConsumerConfiguration {
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServer);
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "job-listing-consumer-g-1");
+        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer.job-listing-service");
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(configProps);
