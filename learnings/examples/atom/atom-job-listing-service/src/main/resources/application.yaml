@@ -2,22 +2,12 @@ server:
   port: ${SERVER_PORT:18080}
 
 spring:
-  application:
-    name: atom-job-listing-service
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:13306/dNOvuT1}
-    username: ${SPRING_DATASOURCE_USERNAME:druvagavlwichafiphe4idatiflfruwr}
-    password: ${SPRING_DATASOURCE_PASSWORD:3ufo94cadatra8rlspudupogo2tecraf}
-  jpa:
-    generate-ddl: ${SPRING_JPA_GENERATE_DDL:true}
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO:create-drop}
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://druvagavlwichafiphe4idatiflfruwr:3ufo94cadatra8rlspudupogo2tecraf@0.0.0.0:17017}
+      database: iyj29yO
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVER_URL:localhost:9092}
-
 
 eureka:
   instance:

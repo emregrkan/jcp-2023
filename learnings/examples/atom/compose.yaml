@@ -24,26 +24,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-  dNOvuT1_job-listings:
-    image: mysql:latest
-    ports:
-      - '13306:3306'
-    environment:
-      - MYSQL_ROOT_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
-      - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
-      - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
-      - MYSQL_DATABASE=dNOvuT1
-
-  uUGiUAB_profiles:
-    image: mysql:latest
-    ports:
-      - '23306:3306'
-    environment:
-      - MYSQL_ROOT_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
-      - MYSQL_USER=druvagavlwichafiphe4idatiflfruwr
-      - MYSQL_PASSWORD=3ufo94cadatra8rlspudupogo2tecraf
-      - MYSQL_DATABASE=uUGiUAB
-
   RguU3oS_keycloak:
     image: mysql:latest
     networks:
@@ -83,6 +63,33 @@ services:
     depends_on:
       - RguU3oS_keycloak
       - openldap
+
+  iyj29yO-job-listings:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: iyj29yO
+      MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
+      MONGO_INITDB_ROOT_PASSWORD: 3ufo94cadatra8rlspudupogo2tecraf
+    ports:
+      - '17017:27017'
+
+  LTyKnDJ-applicants:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: LTyKnDJ
+      MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
+      MONGO_INITDB_ROOT_PASSWORD: 3ufo94cadatra8rlspudupogo2tecraf
+    ports:
+      - '27017:27017'
+
+  40NoXE9-applications:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: 40NoXE9
+      MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
+      MONGO_INITDB_ROOT_PASSWORD: 3ufo94cadatra8rlspudupogo2tecraf
+    ports:
+      - '37017:27017'
 
 networks:
   keycloak:
