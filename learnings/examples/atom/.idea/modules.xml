@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/atom.iml" filepath="$PROJECT_DIR$/.idea/atom.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/atom-applicant-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/atom-applicant-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/atom-application-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/atom-application-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/atom-job-listing-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/atom-job-listing-service.main.iml" />
     </modules>
   </component>

@@ -9,6 +9,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Document
 @Getter
 @Setter
@@ -26,6 +29,7 @@ public class JobListing {
     private Status status;
     private java.util.Date activationDate;
     private java.util.Date dueDate;
+    private Set<Application> applications = new HashSet<>();
     @CreatedDate
     private java.util.Date createdAt;
     private boolean removed = false;

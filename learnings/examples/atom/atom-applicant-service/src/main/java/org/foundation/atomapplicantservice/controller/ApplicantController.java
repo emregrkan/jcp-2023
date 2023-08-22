@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v2/applicants")
+@RequestMapping("/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantController {
     private final ApplicantService applicantService;

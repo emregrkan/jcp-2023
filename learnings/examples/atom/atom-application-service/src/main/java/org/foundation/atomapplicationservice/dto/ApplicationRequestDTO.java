@@ -6,6 +6,7 @@ import org.foundation.atomapplicationservice.entity.attributes.ApplicationStatus
 
 @Data
 public class ApplicationRequestDTO {
+    @Valid
     private ApplicationStatus status = ApplicationStatus.SUBMITTED;
     @Valid
     private ApplicantDTO applicant;
