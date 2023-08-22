@@ -3,6 +3,7 @@
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/atom-applicant-service" />
+    <file type="web" url="file://$PROJECT_DIR$/atom-application-service" />
     <file type="web" url="file://$PROJECT_DIR$/atom-gateway" />
     <file type="web" url="file://$PROJECT_DIR$/atom-job-listing-service" />
     <file type="web" url="file://$PROJECT_DIR$/atom-service-registry" />

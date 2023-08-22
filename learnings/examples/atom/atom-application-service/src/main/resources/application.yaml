@@ -1,0 +1,28 @@
+server:
+  port: ${SERVER_PORT:38080}
+
+spring:
+  application:
+    name: atom-application-service
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://druvagavlwichafiphe4idatiflfruwr:3ufo94cadatra8rlspudupogo2tecraf@0.0.0.0:37017}
+      database: 40NoXE9
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVER_URL:localhost:9092}
+
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://${eureka.instance.hostname}:${EUREKA_PORT:8761}/eureka}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - '*'

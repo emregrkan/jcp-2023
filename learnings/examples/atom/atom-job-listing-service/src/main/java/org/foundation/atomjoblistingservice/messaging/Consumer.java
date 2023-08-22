@@ -8,12 +8,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Consumer {
     @KafkaListener(topics = "job-listings.changed", groupId = "consumer.job-listing-service")
-    public void listenJobListingsEvents(String message) {
+    public void listenJobListingEvents(String message) {
         log.info("Message received: {}", message);
     }
 
     @KafkaListener(topics = "profiles.created", groupId = "consumer.job-listing-service")
-    public void listenProfilesEvents(String message) {
+    public void listenProfileEvents(String message) {
+        log.info("Message received: {}", message);
+    }
+
+    @KafkaListener(topics = "applications.created", groupId = "consumer.job-listing-service")
+    public void listenApplicationEvents(String message) {
         log.info("Message received: {}", message);
     }
 }

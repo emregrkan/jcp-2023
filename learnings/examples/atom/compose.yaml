@@ -82,6 +82,15 @@ services:
     ports:
       - '27017:27017'
 
+  40NoXE9-applications:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: 40NoXE9
+      MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
+      MONGO_INITDB_ROOT_PASSWORD: 3ufo94cadatra8rlspudupogo2tecraf
+    ports:
+      - '37017:27017'
+
 networks:
   keycloak:
     driver: bridge

@@ -1,4 +1,4 @@
-package org.foundation.atomjoblistingservice.constant;
+package org.foundation.atomjoblistingservice.entity.attributes;
 
 import lombok.RequiredArgsConstructor;
 

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.foundation.atomjoblistingservice.constant.*;
+import org.foundation.atomjoblistingservice.entity.attributes.*;
 
 
 import java.sql.Timestamp;
