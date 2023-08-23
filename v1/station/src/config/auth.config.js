@@ -1,6 +1,6 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { getServerSession, Account } from "next-auth";
+import { getServerSession } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import qs from "querystring";
 
@@ -95,8 +95,8 @@ export const authOptions = {
   },
   providers: [
     KeycloakProvider({
-      clientId: process.env.KEYCLOAK_CLIENT_ID ?? "",
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET ?? "",
+      clientId: process.env.KEYCLOAK_CLIENT_ID,
+      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
       issuer: process.env.KEYCLOAK_ISSUER_URL,
     }),
   ],

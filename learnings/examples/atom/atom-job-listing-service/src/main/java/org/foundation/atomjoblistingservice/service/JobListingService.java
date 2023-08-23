@@ -1,20 +1,21 @@
 package org.foundation.atomjoblistingservice.service;
 
 import lombok.RequiredArgsConstructor;
-import org.foundation.atomjoblistingservice.dto.ApplicationResponseDTO;
-import org.foundation.atomjoblistingservice.dto.JobListingFlatResponseDTO;
-import org.foundation.atomjoblistingservice.dto.JobListingRequestDTO;
-import org.foundation.atomjoblistingservice.dto.JobListingResponseDTO;
+import org.foundation.atomjoblistingservice.dto.*;
 import org.foundation.atomjoblistingservice.entity.JobListing;
 import org.foundation.atomjoblistingservice.entity.attributes.Application;
 import org.foundation.atomjoblistingservice.repository.JobListingRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -35,6 +36,18 @@ public class JobListingService {
     public JobListingResponseDTO findJobListingById(final String id) {
         final JobListing jobListing = jobListingRepository.findById(id).orElseThrow(RuntimeException::new);
         return modelMapper.map(jobListing, JobListingResponseDTO.class);
+    }
+
+    public Page<Application> findApplicationsByJobId(final String id, final int page, final int size) {
+
+        final Pageable pageRequest = PageRequest.of(page, size);
+        final Set<Application> applications = jobListingRepository.findById(id).orElseThrow(RuntimeException::new).getApplications();
+
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), applications.size());
+
+        final List<Application> pageContent = applications.stream().toList().subList(start, end);
+        return new PageImpl<>(pageContent, pageRequest, applications.size());
     }
 
     public void addJobApplication(final ApplicationResponseDTO applicationResponseDTO) {

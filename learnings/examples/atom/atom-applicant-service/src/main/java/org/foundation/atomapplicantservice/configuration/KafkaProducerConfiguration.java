@@ -32,8 +32,8 @@ public class KafkaProducerConfiguration {
     }
 
     @Bean
-    public NewTopic profilesChangedTopic() {
-        return new NewTopic("profiles.changed", 6, (short) 1);
+    public NewTopic applicantsCreatedTopic() {
+        return new NewTopic("applicants.created", 6, (short) 1);
     }
 
     @Bean

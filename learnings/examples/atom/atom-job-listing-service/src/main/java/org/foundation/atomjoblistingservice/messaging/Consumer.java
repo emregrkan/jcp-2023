@@ -18,13 +18,13 @@ public class Consumer {
     private final ObjectMapper objectMapper;
     private final JobListingService jobListingService;
 
-    @KafkaListener(topics = "job-listings.changed", groupId = "consumer.job-listing-service")
+    @KafkaListener(topics = "job-listings.created", groupId = "consumer.job-listing-service")
     public void listenJobListingEvents(String message) {
         log.info("Message received: {}", message);
     }
 
-    @KafkaListener(topics = "profiles.created", groupId = "consumer.job-listing-service")
-    public void listenProfileEvents(String message) {
+    @KafkaListener(topics = "applicants.created", groupId = "consumer.job-listing-service")
+    public void listenApplicantEvents(String message) {
         log.info("Message received: {}", message);
     }
 

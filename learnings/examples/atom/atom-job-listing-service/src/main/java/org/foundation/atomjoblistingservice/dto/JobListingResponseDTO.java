@@ -15,6 +15,5 @@ public class JobListingResponseDTO {
     private String workplaceType;
     private String location;
     private Status status;
-    private Set<Application> applications;
     private java.util.Date createdAt;
 }
