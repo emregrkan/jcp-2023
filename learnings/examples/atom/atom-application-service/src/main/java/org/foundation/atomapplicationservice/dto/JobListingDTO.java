@@ -16,6 +16,9 @@ public class JobListingDTO {
     @NotBlank
     @Pattern(regexp = "Full-time|Part-time|Contract|Temporary|Volunteer|Internship|Other")
     private String positionType;
+    @NotBlank
+    // todo: @Pattern
+    private String location;
     @NotNull
     private java.util.Date createdAt;
 }

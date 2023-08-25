@@ -12,4 +12,5 @@ public class ApplicantResponseDTO {
     private String firstName;
     private String lastName;
     private String picture;
+    private String blacklistReason;
 }

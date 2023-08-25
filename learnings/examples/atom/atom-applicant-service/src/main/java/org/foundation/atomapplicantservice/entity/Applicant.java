@@ -1,13 +1,9 @@
 package org.foundation.atomapplicantservice.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.foundation.atomapplicantservice.dto.ApplicationResponseDTO;
+import lombok.Data;
 import org.foundation.atomapplicantservice.entity.attributes.Application;
-import org.foundation.atomapplicantservice.entity.attributes.Blacklist;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,11 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Data
 @Document
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@CompoundIndex(def = "{'applications.job.id': 1}")
 public class Applicant {
     @Id
     private UUID id;
@@ -29,6 +23,6 @@ public class Applicant {
     private String firstName;
     private String lastName;
     private String picture;
-    private Blacklist blacklist;
+    private String blacklistReason;
     private Set<Application> applications = new HashSet<>();
 }

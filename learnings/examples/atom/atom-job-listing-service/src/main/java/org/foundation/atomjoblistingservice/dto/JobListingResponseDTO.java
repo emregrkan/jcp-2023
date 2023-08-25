@@ -3,8 +3,6 @@ package org.foundation.atomjoblistingservice.dto;
 import lombok.Data;
 import org.foundation.atomjoblistingservice.entity.attributes.*;
 
-import java.util.Set;
-
 @Data
 public class JobListingResponseDTO {
     private String id;

@@ -1,7 +1,6 @@
 package org.foundation.atomapplicantservice.entity.attributes;
 
 import lombok.Data;
-import org.foundation.atomapplicantservice.dto.ApplicantResponseDTO;
 import org.foundation.atomapplicantservice.dto.JobListingResponseDTO;
 
 import java.util.Date;

@@ -21,4 +21,5 @@ public class ApplicantRequestDTO {
     @URL
     @NotBlank
     private String picture;
+    private String blacklistReason;
 }

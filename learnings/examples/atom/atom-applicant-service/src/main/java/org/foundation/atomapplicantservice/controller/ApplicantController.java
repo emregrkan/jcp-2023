@@ -6,14 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.foundation.atomapplicantservice.dto.ApplicantRequestDTO;
 import org.foundation.atomapplicantservice.dto.ApplicantResponseDTO;
-import org.foundation.atomapplicantservice.dto.ApplicationResponseDTO;
 import org.foundation.atomapplicantservice.entity.attributes.Application;
 import org.foundation.atomapplicantservice.service.ApplicantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -30,6 +28,11 @@ public class ApplicantController {
     @GetMapping("/{id}")
     public ApplicantResponseDTO findApplicantById(@PathVariable @NotNull final UUID id) {
         return applicantService.findApplicantById(id);
+    }
+
+    @PutMapping("/{id}")
+    public ApplicantResponseDTO updateApplicantById(@PathVariable @NotNull final UUID id, @RequestBody @NotNull @Valid ApplicantRequestDTO applicantRequestDTO) throws JsonProcessingException {
+        return applicantService.updateApplicantById(id, applicantRequestDTO);
     }
 
     @GetMapping("/{id}/applications")

@@ -1,5 +1,6 @@
 package org.foundation.atomjoblistingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
@@ -39,7 +41,12 @@ public class JobListingController {
     }
 
     @PostMapping
-    public JobListingResponseDTO createJobListing(@RequestBody @NotNull @Valid final JobListingRequestDTO body) {
-        return jobListingService.createJobListing(body);
+    public JobListingResponseDTO createJobListing(@RequestBody @NotNull @Valid final JobListingRequestDTO jobListingRequestDTO) {
+        return jobListingService.createJobListing(jobListingRequestDTO);
+    }
+
+    @PutMapping("/{id}")
+    public JobListingResponseDTO updateJobListingById(@PathVariable @NotBlank final String id, @RequestBody @NotNull final JobListingRequestDTO jobListingRequestDTO) throws JsonProcessingException {
+        return jobListingService.updateJobListingById(id, jobListingRequestDTO);
     }
 }
