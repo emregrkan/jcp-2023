@@ -2,6 +2,8 @@ version: '3'
 
 services:
   zookeeper:
+    networks:
+      - cloud
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
     environment:
@@ -9,6 +11,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   broker:
+    networks:
+      - cloud
     image: confluentinc/cp-kafka:latest
     container_name: broker
     ports:
@@ -66,6 +70,8 @@ services:
 
   iyj29yO-job-listings:
     image: mongo:latest
+    networks:
+      - job-listing-service
     environment:
       MONGO_INITDB_DATABASE: iyj29yO
       MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
@@ -75,6 +81,8 @@ services:
 
   LTyKnDJ-applicants:
     image: mongo:latest
+    networks:
+      - applicant-service
     environment:
       MONGO_INITDB_DATABASE: LTyKnDJ
       MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
@@ -84,6 +92,8 @@ services:
 
   40NoXE9-applications:
     image: mongo:latest
+    networks:
+      - application-service
     environment:
       MONGO_INITDB_DATABASE: 40NoXE9
       MONGO_INITDB_ROOT_USERNAME: druvagavlwichafiphe4idatiflfruwr
@@ -91,6 +101,84 @@ services:
     ports:
       - '37017:27017'
 
+  service-registry:
+    networks:
+      - cloud
+    ports:
+      - 8761:8761
+    build:
+      context: atom-service-registry
+      dockerfile: Dockerfile
+    image: atom-service-registry:latest
+
+  gateway:
+    networks:
+      - cloud
+    build:
+      context: atom-gateway
+      dockerfile: Dockerfile
+    image: atom-gateway:latest
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=atom-service-registry-1
+    ports:
+      - '8080:8080'
+    depends_on:
+      - service-registry
+
+  job-listing-service:
+    networks:
+      - cloud
+      - job-listing-service
+    build:
+      context: atom-job-listing-service
+      dockerfile: Dockerfile
+    image: atom-job-listing-service:latest
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=atom-service-registry-1
+      - SPRING_KAFKA_BOOTSTRAP_SERVER_URL=broker:9092
+    depends_on:
+      - gateway
+
+  applicant-service:
+    networks:
+      - cloud
+      - applicant-service
+    build:
+      context: atom-applicant-service
+      dockerfile: Dockerfile
+    image: atom-applicant-service:latest
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=atom-service-registry-1
+      - SPRING_KAFKA_BOOTSTRAP_SERVER_URL=broker:9092
+    depends_on:
+      - gateway
+
+  application-service:
+    networks:
+      - cloud
+      - application-service
+    build:
+      context: atom-application-service
+      dockerfile: Dockerfile
+    image: atom-application-service:latest
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=atom-service-registry-1
+      - SPRING_KAFKA_BOOTSTRAP_SERVER_URL=broker:9092
+    depends_on:
+      - gateway
+
 networks:
+  job-listing-service:
+    driver: bridge
+
+  applicant-service:
+    driver: bridge
+
+  application-service:
+    driver: bridge
+
+  cloud:
+    driver: bridge
+
   keycloak:
     driver: bridge
