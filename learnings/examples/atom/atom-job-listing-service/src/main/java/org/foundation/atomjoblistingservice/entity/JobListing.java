@@ -1,19 +1,16 @@
 package org.foundation.atomjoblistingservice.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import org.foundation.atomjoblistingservice.entity.attributes.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.Set;
+
+@Data
 @Document
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class JobListing {
     @Id
     private String id;
@@ -26,6 +23,7 @@ public class JobListing {
     private Status status;
     private java.util.Date activationDate;
     private java.util.Date dueDate;
+    private Set<Application> applications = new HashSet<>();
     @CreatedDate
     private java.util.Date createdAt;
     private boolean removed = false;

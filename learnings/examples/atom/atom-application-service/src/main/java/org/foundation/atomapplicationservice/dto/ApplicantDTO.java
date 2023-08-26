@@ -25,4 +25,5 @@ public class ApplicantDTO {
     private String firstName;
     @NotBlank
     private String lastName;
+    private String blacklistReason;
 }

@@ -8,6 +8,7 @@ spring:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://druvagavlwichafiphe4idatiflfruwr:3ufo94cadatra8rlspudupogo2tecraf@0.0.0.0:37017}
       database: 40NoXE9
+      auto-index-creation: true
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVER_URL:localhost:9092}
 

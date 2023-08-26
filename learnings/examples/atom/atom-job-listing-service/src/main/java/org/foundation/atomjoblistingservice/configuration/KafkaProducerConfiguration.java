@@ -1,4 +1,4 @@
-package org.foundation.atomapplicantservice.configuration;
+package org.foundation.atomjoblistingservice.configuration;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +32,8 @@ public class KafkaProducerConfiguration {
     }
 
     @Bean
-    public NewTopic applicantsCreatedTopic() {
-        return new NewTopic("applicants.created", 6, (short) 1);
-    }
-
-    @Bean
-    public NewTopic applicantsUpdatedTopic() {
-        return new NewTopic("applicants.updated", 6, (short) 1);
+    public NewTopic createJobListingUpdatedTopic() {
+        return new NewTopic("job-listings.updated", 6, (short) 1);
     }
 
     @Bean

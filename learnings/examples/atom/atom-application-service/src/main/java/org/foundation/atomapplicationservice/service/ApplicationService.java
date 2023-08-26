@@ -4,14 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.foundation.atomapplicationservice.dto.ApplicantDTO;
 import org.foundation.atomapplicationservice.dto.ApplicationRequestDTO;
 import org.foundation.atomapplicationservice.dto.ApplicationResponseDTO;
+import org.foundation.atomapplicationservice.dto.JobListingDTO;
 import org.foundation.atomapplicationservice.entity.Application;
+import org.foundation.atomapplicationservice.entity.attributes.ApplicationStatus;
 import org.foundation.atomapplicationservice.repository.ApplicationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -36,5 +41,23 @@ public class ApplicationService {
         });
 
         return applicationResponseDTO;
+    }
+
+    public void handleApplicantUpdated(final ApplicantDTO applicantDTO) {
+        final Set<Application> applications = applicationRepository.findApplicationsByApplicant_Id(applicantDTO.getId());
+        applications.forEach(application -> {
+            application.setApplicant(applicantDTO);
+
+            if (applicantDTO.getBlacklistReason() != null)
+                application.setStatus(ApplicationStatus.REJECTED);
+        });
+    }
+
+    public void handleJobListingUpdated(final JobListingDTO jobListingDTO) {
+        final Set<Application> applications = applicationRepository.findApplicationsByJob_Id(jobListingDTO.getId());
+        applications.forEach(application -> {
+            application.setJob(jobListingDTO);
+        });
+        applicationRepository.saveAll(applications);
     }
 }

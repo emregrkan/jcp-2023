@@ -1,12 +1,12 @@
-package org.foundation.atomjoblistingservice.dto;
+package org.foundation.atomapplicantservice.dto;
 
 import lombok.Data;
 
 @Data
-public class JobListingFlatResponseDTO {
+public class JobListingResponseDTO {
     private String id;
     private String title;
-    private String location;
     private String positionType;
+    private String location;
     private java.util.Date createdAt;
 }

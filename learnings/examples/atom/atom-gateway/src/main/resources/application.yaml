@@ -10,6 +10,25 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - id: atom-job-listing-service
+          uri: lb://atom-job-listing-service
+          predicates:
+            - Path=/api/v2/job-listings/**
+          filters:
+            - StripPrefix=3
+        - id: atom-application-service
+          uri: lb://atom-application-service
+          predicates:
+            - Path=/api/v2/applications/**
+          filters:
+            - StripPrefix=3
+        - id: atom-applicant-service
+          uri: lb://atom-applicant-service
+          predicates:
+            - Path=/api/v2/applicants/**
+          filters:
+            - StripPrefix=3
 
 eureka:
   instance:
